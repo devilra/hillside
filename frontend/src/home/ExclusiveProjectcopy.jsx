@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Heart,
@@ -29,14 +29,14 @@ const DEFAULT_PROJECTS = [
   },
 ];
 
-// ─── Single Project Card ──────────────────────────────────────────────────────
+// ─── Single Project Card (design UNTOUCHED) ─────────────────────────────────
 function ProjectCard({ project }) {
   const [liked, setLiked] = useState(false);
   const navigate = useNavigate();
 
   return (
     <div className="group relative rounded-3xl border border-lime-400/15 bg-[#0d1a12] shadow-[0_0_0_1px_rgba(163,230,53,0.04),0_20px_50px_-20px_rgba(0,0,0,0.6)] overflow-hidden flex flex-col md:flex-row text-left transition-all duration-500 hover:border-lime-400/40 hover:shadow-[0_0_0_1px_rgba(163,230,53,0.15),0_25px_60px_-15px_rgba(163,230,53,0.15)]">
-      {/* ── Image Panel (now leads, with floating overlays) ── */}
+      {/* ── Image Panel ── */}
       <div className="relative md:w-[52%] flex-shrink-0 min-h-[260px] md:min-h-[380px] overflow-hidden bg-[#0b1710]">
         <img
           src={
@@ -51,11 +51,9 @@ function ProjectCard({ project }) {
           }}
         />
 
-        {/* Gradient wash for legibility of floating elements */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/30 pointer-events-none" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0b1710]/40 md:from-[#0b1710]/10 to-transparent pointer-events-none" />
 
-        {/* Top-left: Exclusive badge */}
         <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-lime-400/30">
           <Sparkles size={13} className="text-lime-400" />
           <span className="text-[11px] font-semibold text-lime-300 uppercase tracking-wide">
@@ -63,7 +61,6 @@ function ProjectCard({ project }) {
           </span>
         </div>
 
-        {/* Top-right: like / share, floating glass circles */}
         <div className="absolute top-4 right-4 flex items-center gap-2">
           <button
             onClick={() => setLiked(!liked)}
@@ -81,7 +78,6 @@ function ProjectCard({ project }) {
           </button>
         </div>
 
-        {/* Bottom-left: floating glass price tag, only on larger screens (shown in panel on mobile) */}
         <div className="hidden md:block absolute bottom-4 left-4 px-4 py-2.5 rounded-2xl bg-black/40 backdrop-blur-md border border-lime-400/25">
           <p className="text-[10px] text-gray-300 uppercase tracking-wide mb-0.5">
             Starting price
@@ -94,7 +90,6 @@ function ProjectCard({ project }) {
 
       {/* ── Right: Info Panel ── */}
       <div className="relative flex flex-col justify-between p-6 md:p-8 flex-1 bg-[#0b1710]">
-        {/* subtle corner glow */}
         <div className="pointer-events-none absolute -top-10 -right-10 w-40 h-40 rounded-full bg-lime-400/5 blur-2xl" />
 
         <div className="relative">
@@ -106,12 +101,10 @@ function ProjectCard({ project }) {
             {project.location}
           </p>
 
-          {/* Price — shown here on mobile since floating tag is desktop-only */}
           <p className="md:hidden text-lime-400 font-bold text-[20px] mb-5 tracking-tight">
             {project.price}
           </p>
 
-          {/* Stat chips instead of plain divider layout */}
           <div className="flex flex-wrap gap-2.5 mb-6">
             <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-lime-400/[0.06] border border-lime-400/15">
               <CalendarDays size={15} className="text-lime-400 shrink-0" />
@@ -139,7 +132,6 @@ function ProjectCard({ project }) {
           </div>
         </div>
 
-        {/* Bottom: CTA Buttons */}
         <div className="relative flex items-center gap-3">
           <button className="text-gray-300 font-semibold text-[14px] hover:text-lime-400 transition-colors px-1">
             Contact Us
@@ -164,10 +156,28 @@ function ProjectCard({ project }) {
   );
 }
 
+// ─── Slide animation variants ────────────────────────────────────────────────
+const slideVariants = {
+  enter: (direction) => ({
+    x: direction > 0 ? "100%" : "-100%",
+    opacity: 0,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+  },
+  exit: (direction) => ({
+    x: direction > 0 ? "-100%" : "100%",
+    opacity: 0,
+  }),
+};
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function ExclusiveProjects() {
-  const [current, setCurrent] = useState(0);
   const [projects, setProjects] = useState([]);
+  const [[index, direction], setIndexState] = useState([0, 0]);
+  const [isHovering, setIsHovering] = useState(false);
+  const autoplayRef = useRef(null);
 
   useEffect(() => {
     const fetchProjectsList = async () => {
@@ -199,11 +209,51 @@ export default function ExclusiveProjects() {
     fetchProjectsList();
   }, []);
 
-  const prev = () =>
-    setCurrent((p) => (p - 1 + projects.length) % projects.length);
-  const next = () => setCurrent((p) => (p + 1) % projects.length);
+  const paginate = useCallback(
+    (newDirection) => {
+      setIndexState(([prevIndex]) => {
+        const len = projects.length;
+        if (len === 0) return [0, 0];
+        const nextIndex = (prevIndex + newDirection + len) % len;
+        return [nextIndex, newDirection];
+      });
+    },
+    [projects.length],
+  );
+
+  const goTo = (targetIndex) => {
+    setIndexState(([prevIndex]) => {
+      if (targetIndex === prevIndex) return [prevIndex, 0];
+      const dir = targetIndex > prevIndex ? 1 : -1;
+      return [targetIndex, dir];
+    });
+  };
+
+  // ── Autoplay every 6s, paused on hover ──
+  useEffect(() => {
+    if (projects.length <= 1) return;
+    if (isHovering) return;
+
+    autoplayRef.current = setInterval(() => {
+      paginate(1);
+    }, 6000);
+
+    return () => clearInterval(autoplayRef.current);
+  }, [isHovering, paginate, projects.length]);
 
   if (projects.length === 0) return null;
+
+  const currentProject = projects[index];
+
+  // ── Swipe handling ──
+  const handleDragEnd = (event, info) => {
+    const threshold = 80;
+    if (info.offset.x < -threshold) {
+      paginate(1);
+    } else if (info.offset.x > threshold) {
+      paginate(-1);
+    }
+  };
 
   return (
     <motion.section
@@ -220,7 +270,7 @@ export default function ExclusiveProjects() {
       }}
       className="w-full pt-5 relative overflow-hidden"
     >
-      <div className=" px-4 sm:px-6 md:px-10 lg:px-9 flex flex-col gap-6 relative">
+      <div className="px-4 sm:px-6 md:px-10 lg:px-9 flex flex-col gap-6 relative">
         {/* Header */}
         <motion.div
           variants={{
@@ -243,28 +293,65 @@ export default function ExclusiveProjects() {
           </div>
         </motion.div>
 
-        {/* Card Frame containing slide setup */}
+        {/* Carousel Frame */}
         <motion.div
           variants={{
             hidden: { opacity: 0, y: 40 },
             visible: { opacity: 1, y: 0 },
           }}
           transition={{ duration: 0.6, ease: "easeOut" }}
+          className="relative"
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={() => setIsHovering(false)}
         >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={current}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.35, ease: "easeInOut" }}
+          {/* Slide area */}
+          <div className="relative overflow-hidden w-full">
+            <AnimatePresence
+              mode="popLayout"
+              custom={direction}
+              initial={false}
             >
-              <ProjectCard project={projects[current]} />
-            </motion.div>
-          </AnimatePresence>
+              <motion.div
+                key={currentProject.id}
+                custom={direction}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.5, ease: [0.32, 0.72, 0.35, 1] }}
+                drag={projects.length > 1 ? "x" : false}
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.2}
+                onDragEnd={handleDragEnd}
+                className="w-full select-none"
+              >
+                <ProjectCard project={currentProject} />
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Prev / Next arrows */}
+          {projects.length > 1 && (
+            <>
+              <button
+                onClick={() => paginate(-1)}
+                aria-label="Previous project"
+                className="absolute top-1/2 -translate-y-1/2 left-2 sm:-left-4 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-lime-400/25 flex items-center justify-center text-gray-300 hover:border-lime-400 hover:text-lime-400 transition-colors bg-[#0d1a12]/90 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.4)]"
+              >
+                <ChevronLeft size={18} strokeWidth={2.5} />
+              </button>
+              <button
+                onClick={() => paginate(1)}
+                aria-label="Next project"
+                className="absolute top-1/2 -translate-y-1/2 right-2 sm:-right-4 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-lime-400/25 flex items-center justify-center text-gray-300 hover:border-lime-400 hover:text-lime-400 transition-colors bg-[#0d1a12]/90 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.4)]"
+              >
+                <ChevronRight size={18} strokeWidth={2.5} />
+              </button>
+            </>
+          )}
         </motion.div>
 
-        {/* Project navigation dots + arrows */}
+        {/* Pagination dots */}
         {projects.length > 1 && (
           <motion.div
             variants={{
@@ -272,35 +359,20 @@ export default function ExclusiveProjects() {
               visible: { opacity: 1, y: 0 },
             }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className="flex items-center justify-center gap-3 mt-2"
+            className="flex items-center justify-center gap-2"
           >
-            <button
-              onClick={prev}
-              className="w-8 h-8 rounded-full border border-lime-400/25 flex items-center justify-center text-gray-300 hover:border-lime-400 hover:text-lime-400 transition-colors bg-[#0d1a12] shadow-sm"
-            >
-              <ChevronLeft size={16} strokeWidth={2.5} />
-            </button>
-
-            <div className="flex gap-2">
-              {projects.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrent(i)}
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    current === i
-                      ? "w-6 bg-lime-400"
-                      : "w-2 bg-gray-600 hover:bg-gray-500"
-                  }`}
-                />
-              ))}
-            </div>
-
-            <button
-              onClick={next}
-              className="w-8 h-8 rounded-full border border-lime-400/25 flex items-center justify-center text-gray-300 hover:border-lime-400 hover:text-lime-400 transition-colors bg-[#0d1a12] shadow-sm"
-            >
-              <ChevronRight size={16} strokeWidth={2.5} />
-            </button>
+            {projects.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goTo(i)}
+                aria-label={`Go to project ${i + 1}`}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  index === i
+                    ? "w-6 bg-lime-400"
+                    : "w-2 bg-gray-600 hover:bg-gray-500"
+                }`}
+              />
+            ))}
           </motion.div>
         )}
       </div>
