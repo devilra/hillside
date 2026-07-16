@@ -59,7 +59,7 @@ function PropertyCard({ project }) {
   const navigate = useNavigate();
 
   return (
-    <div className="flex-shrink-0 w-[250px]  md:w-[320px] lg:w-[420px] hover:-translate-y-1.5 transition-transform duration-300 ease-out">
+    <div className="flex-shrink-0 w-[240px]  md:w-[320px] lg:w-[420px] hover:-translate-y-1.5 transition-transform duration-300 ease-out">
       <BorderGlow
         edgeSensitivity={25}
         backgroundColor="#0d1a12"
@@ -273,8 +273,9 @@ export default function LatestPropertyLaunches() {
             <div className="p-2 rounded-xl bg-lime-400/10 border border-lime-400/20">
               <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-lime-400 shrink-0" />
             </div>
-            <h2 className="text-[22px] sm:text-[26px] md:text-[30px] font-bold text-lime-400 uppercase tracking-tight">
-              Elite 1.5-Acre Estates
+            <h2 className="text-[22px] sm:text-[26px] md:text-[30px] font-bold uppercase tracking-tight text-lime-400">
+              Elite Estates from{" "}
+              <span className="text-white">1 Acre to 5 Acres</span>
             </h2>
             <span className="hidden sm:block w-14 md:w-16 h-px bg-white/20" />
           </div>
