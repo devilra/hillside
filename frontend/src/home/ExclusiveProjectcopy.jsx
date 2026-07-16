@@ -27,6 +27,16 @@ const DEFAULT_PROJECTS = [
     builtupArea: "10 plots",
     images: ["/images/Centre-Park.jpg"],
   },
+  {
+    id: 2,
+    name: "Today Citadel Juinagar",
+    route: "/purva-panorama",
+    location: "Yelagiri Hills",
+    price: "₹ 1.80 Cr Onwards",
+    configuration: "Feb 2025",
+    builtupArea: "10 plots",
+    images: ["/images/Centre-Park.jpg"],
+  },
 ];
 
 // ─── Single Project Card (design UNTOUCHED) ─────────────────────────────────

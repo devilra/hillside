@@ -20,7 +20,7 @@ const getLiveURL = () => {
   return "https://amigowebster.in/hillsite-api";
 };
 
-export const API_URL = isLocal ? "http://localhost:5000" : getLiveURL();
+// export const API_URL = isLocal ? "http://localhost:5000" : getLiveURL();
 
-// export const API_URL = "https://amigowebster.in/hillsite-api";
+export const API_URL = "https://amigowebster.in/hillsite-api";
 export default API_URL;
