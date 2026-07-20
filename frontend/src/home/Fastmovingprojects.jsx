@@ -200,13 +200,13 @@ export default function FastMovingProjects() {
               builder: p.author || "Admin",
               route: p.routeSubpath,
             }));
-          setProjects(filtered.length > 0 ? filtered : DEFAULT_PROJECTS);
+          setProjects(filtered);
         } else {
-          setProjects(DEFAULT_PROJECTS);
+          setProjects([]);
         }
       } catch (error) {
         console.error("Error fetching fast moving projects:", error);
-        setProjects(DEFAULT_PROJECTS);
+        setProjects([]);
       }
     };
     fetchProjectsList();
@@ -325,9 +325,43 @@ export default function FastMovingProjects() {
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; }`}</style>
-            {projects.map((project) => (
-              <PropertyCard key={project.id} project={project} />
-            ))}
+            {projects.length > 0 ? (
+              <div
+                ref={scrollRef}
+                className="flex gap-4 overflow-x-auto scroll-smooth pt-4 pb-4 px-2 -mx-2 hide-scrollbar"
+                style={{
+                  scrollbarWidth: "none",
+                  msOverflowStyle: "none",
+                }}
+              >
+                <style>{`
+      .hide-scrollbar::-webkit-scrollbar{
+        display:none;
+      }
+    `}</style>
+
+                {projects.map((project) => (
+                  <PropertyCard key={project.id} project={project} />
+                ))}
+              </div>
+            ) : (
+              <div className="w-full min-h-[340px] rounded-3xl border border-dashed border-lime-400/20 bg-[#0d1a12] flex flex-col items-center justify-center text-center px-6">
+                <Mountain className="w-16 h-16 text-lime-400/40 mb-5" />
+
+                <h3 className="text-3xl font-bold text-white">
+                  No Premium Plot Projects
+                </h3>
+
+                <p className="mt-3 max-w-lg text-gray-400 leading-relaxed">
+                  There are currently no premium plot projects available in this
+                  category. Please check back later for upcoming launches.
+                </p>
+
+                <button className="mt-8 px-6 py-3 rounded-full bg-lime-400 text-black font-semibold hover:bg-lime-300 transition-all">
+                  Browse Other Projects
+                </button>
+              </div>
+            )}
           </div>
         </motion.div>
 
