@@ -1,3 +1,4 @@
+import { MailIcon } from "lucide-react";
 import React from "react";
 
 export default function Footer() {
@@ -25,7 +26,10 @@ export default function Footer() {
                 <span>📍</span> Vashi , Navi Mumbai - 400703.
               </p> */}
               <p className="flex items-center gap-2">
-                <span>✉️</span> thiruyh@gmail.com
+                <span>
+                  <MailIcon size={14} />
+                </span>{" "}
+                thiruyh@gmail.com
               </p>
             </div>
           </div>
