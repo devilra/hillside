@@ -4,6 +4,7 @@ import FloatingLeaves from "../components/FloatingLeaves";
 import FastMovingProjects from "./Fastmovingprojects";
 import ExclusiveProjects from "./ExclusiveProjectcopy";
 import LatestPropertyLaunches from "./LatestPropertyLaunches";
+import SmallMovingProjects from "./SmallmovingProjects";
 
 function Home() {
   return (
@@ -11,6 +12,7 @@ function Home() {
       {/* <FloatingLeaves /> */}
       <Hero />
       <ExclusiveProjects />
+      <SmallMovingProjects />
       <FastMovingProjects />
       {/* <EverythingYouNeed/> */}
       <LatestPropertyLaunches />

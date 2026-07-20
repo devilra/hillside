@@ -269,7 +269,7 @@ export default function FastMovingProjects() {
             </div>
             <h2 className="text-[22px] sm:text-[26px] md:text-[30px] font-bold uppercase tracking-tight">
               <span className="text-lime-400">Premium Plots from </span>
-              <span className="text-white">2 Cents to 1 Acre</span>
+              <span className="text-white">25 Cents to 1 Acre</span>
             </h2>
             <span className="hidden sm:block w-14 md:w-16 h-px bg-white/20" />
           </div>

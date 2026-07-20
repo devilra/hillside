@@ -107,7 +107,7 @@ export default function Hero() {
           className="space-y-6 max-w-3xl mx-auto sm:mx-0 text-center sm:text-left text-white flex flex-col items-center sm:items-start"
         >
           {/* Mobile Eyebrow Badge — only on mobile */}
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={
               isPreloaderFinished ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }
@@ -122,7 +122,7 @@ export default function Hero() {
             <span className="text-[10px] font-bold tracking-[0.15em] text-lime-400 uppercase whitespace-nowrap">
               Welcome to Hillsite
             </span>
-          </motion.div>
+          </motion.div> */}
 
           {/* Logo Mark — only on desktop/tablet */}
           <motion.div

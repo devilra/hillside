@@ -42,13 +42,19 @@ export default function Navbar() {
         {/* Left Side: Logo */}
         <a
           href="/"
-          className="flex items-center z-10 hover:opacity-90 transition-opacity"
+          className="flex items-center gap-3 z-10 hover:opacity-90 transition-opacity"
         >
           <img
             src="/hillside/Hillsite-Favicon.webp"
-            alt="Real Estate Logo"
+            alt="Hillsite Logo"
             className="w-14 h-14 md:w-16 md:h-16 object-contain"
           />
+
+          <div className="leading-none">
+            <h1 className="font-['Lugrasimo'] text-white text-[22px] md:text-[28px] tracking-wide">
+              Hillsite
+            </h1>
+          </div>
         </a>
 
         <div className="flex items-center">

@@ -8,58 +8,58 @@ import {
   LayoutGrid,
   ChevronLeft,
   ChevronRight,
-  Sparkles,
+  Mountain,
 } from "lucide-react";
 import BorderGlow from "../components/BorderGlow";
 import API_URL from "../app";
 
-// ─── Seeded Fallback Property Data (Updated for Yelagiri) ────────────────────
+// ─── Seeded Fallback Feature Data ────────────────────────────────────────────
 const DEFAULT_PROJECTS = [
   {
     id: 1,
-    image: "/hillside/img-2.jpeg",
+    image: "/hillside/Scenic-View.webp",
     route: "/hubtown-seasons-ecuador",
-    status: "New Launch",
-    title: "Athanavur, Yelagiri",
-    location: "Yelagiri",
-    price: "₹1.18 Cr Onward",
-    config: "2,3,4 BHK Apartment",
-    area: "785 - 1796 sq ft",
-    builder: "By L And T Realty",
+    status: "Verified",
+    title: "Handpicked Scenic Plots",
+    location: "Yelagiri Hills",
+    price: "₹ 25 L Onwards",
+    config: "Jan 2026",
+    area: "50 Plots",
+    builder: "Hillsite Developers",
   },
   {
     id: 2,
-    image: "/hillside/img-3.jpeg",
+    image: "/hillside/Ownership-Documents.webp",
     route: "/hubtown-seasons-ecuador",
-    status: "New Launch",
-    title: "Mangalam, Yelagiri",
-    location: "Yelagiri",
-    price: "₹ 9.61 Cr Onwards",
-    config: "3,4,5 BHK Apartment",
-    area: "Area on request",
-    builder: "Rustomjee Builders",
+    status: "Verified",
+    title: "Verified Ownership Documents",
+    location: "Yelagiri Hills",
+    price: "Price on request",
+    config: "Feb 2026",
+    area: "10 Plots",
+    builder: "Hillsite Developers",
   },
   {
     id: 3,
-    image: "/hillside/img-4.jpeg",
+    image: "/hillside/Direct-Accees-to-Owners.webp",
     route: "/hubtown-seasons-ecuador",
-    status: "Ready to Move",
-    title: "Punganoor, Yelagiri",
-    location: "Yelagiri",
-    price: "₹2.30 Cr Onwards",
-    config: "2,3 BHK Apartment",
-    area: "646 - 1089 sq ft",
-    builder: "By Godrej Properties",
+    status: "Direct Access",
+    title: "Direct Access to Verified Landowners",
+    location: "Yelagiri Hills",
+    price: "Price on request",
+    config: "Mar 2026",
+    area: "15 Plots",
+    builder: "Hillsite Developers",
   },
 ];
 
-// ─── Property Card (wide, short — landscape layout, same as FastMovingProjects) ──
+// ─── Property Card (wide, short — landscape layout) ──────────────────────────
 function PropertyCard({ project }) {
   const [liked, setLiked] = useState(false);
   const navigate = useNavigate();
 
   return (
-    <div className="flex-shrink-0 w-[240px]  md:w-[320px] lg:w-[420px] hover:-translate-y-1.5 transition-transform duration-300 ease-out">
+    <div className="shrink-0 w-[240px]  md:w-[320px] lg:w-[420px] hover:-translate-y-1.5 transition-transform duration-300 ease-out">
       <BorderGlow
         edgeSensitivity={25}
         backgroundColor="#0d1a12"
@@ -126,22 +126,16 @@ function PropertyCard({ project }) {
               </span>
             </div>
 
-            {(project.config || project.area) && (
-              <div className="flex items-center gap-3 text-[11px] text-gray-500 pt-0.5">
-                {project.config && (
-                  <span className="flex items-center gap-1">
-                    <CalendarDays size={11} className="text-lime-400/70" />
-                    {project.config}
-                  </span>
-                )}
-                {project.area && (
-                  <span className="flex items-center gap-1">
-                    <LayoutGrid size={11} className="text-lime-400/70" />
-                    {project.area}
-                  </span>
-                )}
-              </div>
-            )}
+            <div className="flex items-center gap-3 text-[11px] text-gray-500 pt-0.5">
+              <span className="flex items-center gap-1">
+                <CalendarDays size={11} className="text-lime-400/70" />
+                {project.config}
+              </span>
+              <span className="flex items-center gap-1">
+                <LayoutGrid size={11} className="text-lime-400/70" />
+                {project.area}
+              </span>
+            </div>
 
             <div className="pt-1.5 mt-0.5 border-t border-white/5 text-[10px] text-gray-500">
               By{" "}
@@ -179,22 +173,21 @@ function ArrowButton({ direction, onClick, disabled }) {
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function LatestPropertyLaunches() {
+export default function SmallMovingProjects() {
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [projects, setProjects] = useState([]);
 
-  console.log("projects", projects);
-
   useEffect(() => {
     const fetchProjectsList = async () => {
+      console.log("API_URL", API_URL);
       try {
         const res = await fetch(`${API_URL}/api/projects`);
         if (res.ok) {
           const data = await res.json();
           const filtered = data
-            .filter((p) => p.type === "latest_launch")
+            .filter((p) => p.type === "small_plot")
             .map((p) => ({
               id: p.id,
               image: p.mainImage,
@@ -212,12 +205,13 @@ export default function LatestPropertyLaunches() {
           setProjects(DEFAULT_PROJECTS);
         }
       } catch (error) {
-        console.error("Error fetching latest launches:", error);
+        console.error("Error fetching fast moving projects:", error);
         setProjects(DEFAULT_PROJECTS);
       }
     };
     fetchProjectsList();
   }, []);
+
   const checkScroll = () => {
     const el = scrollRef.current;
     if (!el) return;
@@ -257,7 +251,7 @@ export default function LatestPropertyLaunches() {
         hidden: {},
         visible: { transition: { staggerChildren: 0.25 } },
       }}
-      className="w-full bg-slate-950 pt-3"
+      className="w-full pt-7 bg-slate-950"
     >
       <div className="px-4 sm:px-6 md:px-10 lg:px-9 flex flex-col gap-4">
         {/* Header Row */}
@@ -271,11 +265,11 @@ export default function LatestPropertyLaunches() {
         >
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-lime-400/10 border border-lime-400/20">
-              <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-lime-400 shrink-0" />
+              <Mountain className="w-5 h-5 md:w-6 md:h-6 text-lime-400 shrink-0" />
             </div>
-            <h2 className="text-[22px] sm:text-[26px] md:text-[30px] font-bold uppercase tracking-tight text-lime-400">
-              Elite Estates from{" "}
-              <span className="text-white">above 5 Acres</span>
+            <h2 className="text-[22px] sm:text-[26px] md:text-[30px] font-bold uppercase tracking-tight">
+              <span className="text-lime-400">Small Plots from </span>
+              <span className="text-white">below 25 Cents</span>
             </h2>
             <span className="hidden sm:block w-14 md:w-16 h-px bg-white/20" />
           </div>
@@ -311,9 +305,9 @@ export default function LatestPropertyLaunches() {
             visible: { opacity: 1, y: 0 },
           }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="relative"
+          className="relative w-full"
         >
-          {/* Fade Overlays — outside the scrolling container so they stay fixed on the edges */}
+          {/* Fade Overlays — same pattern as UpcomingEvents */}
           <div
             className={`absolute -left-4 top-0 bottom-0 w-8 bg-gradient-to-r from-slate-950 to-transparent pointer-events-none z-10 transition-opacity duration-300 ${
               canScrollLeft ? "opacity-100" : "opacity-0"
@@ -350,7 +344,7 @@ export default function LatestPropertyLaunches() {
             href="#"
             className="flex items-center gap-1 text-lime-400 text-sm font-medium border border-lime-400/25 rounded-full px-5 py-2 hover:bg-lime-400/5 transition-colors"
           >
-            View all projects
+            View all project
             <ChevronRight size={15} strokeWidth={2.5} />
           </a>
         </motion.div> */}
