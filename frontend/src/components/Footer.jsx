@@ -21,9 +21,9 @@ export default function Footer() {
               connection to nature.
             </p>
             <div className="space-y-1 text-xs text-slate-400 font-normal">
-              <p className="flex items-center gap-2">
+              {/* <p className="flex items-center gap-2">
                 <span>📍</span> Vashi , Navi Mumbai - 400703.
-              </p>
+              </p> */}
               <p className="flex items-center gap-2">
                 <span>✉️</span> thiruyh@gmail.com
               </p>
