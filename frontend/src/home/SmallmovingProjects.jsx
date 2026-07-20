@@ -200,13 +200,13 @@ export default function SmallMovingProjects() {
               builder: p.author || "Admin",
               route: p.routeSubpath,
             }));
-          setProjects(filtered.length > 0 ? filtered : DEFAULT_PROJECTS);
+          setProjects(filtered);
         } else {
-          setProjects(DEFAULT_PROJECTS);
+          setProjects([]);
         }
       } catch (error) {
         console.error("Error fetching fast moving projects:", error);
-        setProjects(DEFAULT_PROJECTS);
+        setProjects([]);
       }
     };
     fetchProjectsList();
@@ -325,9 +325,39 @@ export default function SmallMovingProjects() {
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; }`}</style>
-            {projects.map((project) => (
-              <PropertyCard key={project.id} project={project} />
-            ))}
+            {projects.length > 0 ? (
+              <div
+                ref={scrollRef}
+                className="flex gap-4 overflow-x-auto scroll-smooth pt-4 pb-4 px-2 -mx-2 hide-scrollbar"
+                style={{
+                  scrollbarWidth: "none",
+                  msOverflowStyle: "none",
+                }}
+              >
+                <style>{`
+      .hide-scrollbar::-webkit-scrollbar{
+        display:none;
+      }
+    `}</style>
+
+                {projects.map((project) => (
+                  <PropertyCard key={project.id} project={project} />
+                ))}
+              </div>
+            ) : (
+              <div className="w-full min-h-[320px] rounded-3xl border border-dashed border-lime-400/20 bg-[#0d1a12] flex flex-col items-center justify-center text-center px-6">
+                <Mountain className="w-14 h-14 text-lime-400/40 mb-5" />
+
+                <h3 className="text-2xl font-bold text-white">
+                  No Small Plot Projects
+                </h3>
+
+                <p className="mt-3 max-w-md text-gray-400 leading-relaxed">
+                  There are currently no projects available in this category.
+                  Please check back later for upcoming launches.
+                </p>
+              </div>
+            )}
           </div>
         </motion.div>
 
