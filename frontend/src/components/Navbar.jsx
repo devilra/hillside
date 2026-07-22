@@ -42,7 +42,7 @@ export default function Navbar() {
         {/* Left Side: Logo */}
         <a
           href="/"
-          className="flex items-center gap-3 z-10 hover:opacity-90 transition-opacity"
+          className="flex items-center  z-10 hover:opacity-90 transition-opacity"
         >
           <img
             src="/hillside/Hillsite-Favicon.webp"

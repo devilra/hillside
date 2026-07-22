@@ -263,15 +263,20 @@ export default function FastMovingProjects() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="flex items-center justify-between"
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-start gap-4">
             <div className="p-2 rounded-xl bg-lime-400/10 border border-lime-400/20">
               <Mountain className="w-5 h-5 md:w-6 md:h-6 text-lime-400 shrink-0" />
             </div>
-            <h2 className="text-[22px] sm:text-[26px] md:text-[30px] font-bold uppercase tracking-tight">
-              <span className="text-lime-400">Premium Plots from </span>
-              <span className="text-white">25 Cents to 1 Acre</span>
+            <h2 className="uppercase leading-none">
+              <span className="block text-[18px] sm:text-[20px] md:text-[22px] font-extrabold tracking-[0.24em] text-lime-400">
+                PREMIUM PLOTS
+              </span>
+
+              <span className="block mt-1 text-[18px] sm:text-[34px] md:text-[36px] font-black tracking-tight text-white">
+                1 ACRES
+              </span>
             </h2>
-            <span className="hidden sm:block w-14 md:w-16 h-px bg-white/20" />
+            {/* <span className="hidden sm:block w-14 md:w-16 h-px bg-white/20" /> */}
           </div>
 
           {/* <div className="flex items-center gap-3">
@@ -357,9 +362,9 @@ export default function FastMovingProjects() {
                   category. Please check back later for upcoming launches.
                 </p>
 
-                <button className="mt-8 px-6 py-3 rounded-full bg-lime-400 text-black font-semibold hover:bg-lime-300 transition-all">
+                {/* <button className="mt-8 px-6 py-3 rounded-full bg-lime-400 text-black font-semibold hover:bg-lime-300 transition-all">
                   Browse Other Projects
-                </button>
+                </button> */}
               </div>
             )}
           </div>

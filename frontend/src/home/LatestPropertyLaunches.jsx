@@ -269,15 +269,20 @@ export default function LatestPropertyLaunches() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="flex items-center justify-between"
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-start gap-4">
             <div className="p-2 rounded-xl bg-lime-400/10 border border-lime-400/20">
               <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-lime-400 shrink-0" />
             </div>
-            <h2 className="text-[22px] sm:text-[26px] md:text-[30px] font-bold uppercase tracking-tight text-lime-400">
-              Elite Estates from{" "}
-              <span className="text-white">above 5 Acres</span>
+            <h2 className="uppercase leading-none">
+              <span className="block text-[18px] sm:text-[20px] md:text-[22px] font-extrabold tracking-[0.24em] text-lime-400">
+                ELITE ESTATES
+              </span>
+
+              <span className="block mt-1 text-[18px] sm:text-[34px] md:text-[36px] font-black tracking-tight text-white">
+                5 ACRES
+              </span>
             </h2>
-            <span className="hidden sm:block w-14 md:w-16 h-px bg-white/20" />
+            {/* <span className="hidden sm:block w-14 md:w-16 h-px bg-white/20" /> */}
           </div>
 
           {/* <div className="flex items-center gap-3">
@@ -364,9 +369,9 @@ export default function LatestPropertyLaunches() {
                   launches.
                 </p>
 
-                <button className="mt-8 px-6 py-3 rounded-full bg-lime-400 text-black font-semibold hover:bg-lime-300 transition-all">
+                {/* <button className="mt-8 px-6 py-3 rounded-full bg-lime-400 text-black font-semibold hover:bg-lime-300 transition-all">
                   Browse Other Projects
-                </button>
+                </button> */}
               </div>
             )}
           </div>

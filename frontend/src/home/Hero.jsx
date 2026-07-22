@@ -41,8 +41,8 @@ export default function Hero() {
 
   const topFeatures = [
     { label: "Lush Green\nEnvironment", icon: Leaf },
-    { label: "Gated\nCommunity", icon: ShieldCheck },
-    { label: "Wide Roads &\nGreat Connectivity", icon: Milestone },
+    { label: "Verified\nProperties", icon: ShieldCheck },
+    { label: "Road \nConnectivity", icon: Milestone },
     { label: "Pure Air\n& Water", icon: Droplet },
   ];
 
@@ -53,18 +53,19 @@ export default function Hero() {
       icon: Leaf,
     },
     {
-      label: "Secure & Well Planned",
-      desc: "Gated community with modern amenities",
-      icon: Home,
-    },
-    {
       label: "Perfect for Your Family",
       desc: "Safe, friendly & ideal for family living",
       icon: Users,
     },
     {
-      label: "Close to Schools, IT Parks & Essentials",
-      desc: "Everything you need, just minutes away",
+      label: "Ideal for Resorts & Retreats",
+      desc: "Best place to stay with nature and provide a place others to experiences",
+      icon: Home,
+    },
+
+    {
+      label: "Investment",
+      desc: "A great choice for investment and as an inheritance for the next generation.",
       icon: MapPin,
     },
   ];
@@ -76,14 +77,13 @@ export default function Hero() {
       className="
     relative
     w-full
-    min-h-screen
     bg-[url('/hillside/hillsite-logo1.png')]
     bg-cover
     bg-center
     flex
     items-center
-    pt-20
-    sm:pt-[130px]
+    pt-40
+    lg:pt-32
     pb-10
     md:pb-14
     lg:pb-20
@@ -104,7 +104,7 @@ export default function Hero() {
             isPreloaderFinished ? { opacity: 1, x: 0 } : { opacity: 0, x: -40 }
           }
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="space-y-6 max-w-3xl mx-auto sm:mx-0 text-center sm:text-left text-white flex flex-col items-center sm:items-start"
+          className="space-y-6 max-w-3xl  sm:mx-0 text-center sm:text-left text-white flex flex-col items-center sm:items-start"
         >
           {/* Mobile Eyebrow Badge — only on mobile */}
           {/* <motion.div
@@ -148,7 +148,7 @@ export default function Hero() {
 
           {/* Core Brand & Typography Stack */}
           {/* Core Brand & Typography Stack */}
-          <div className="space-y-2.5 sm:space-y-3 flex flex-col items-center sm:items-start">
+          <div className="space-y-6 max-w-3xl text-left text-white flex flex-col items-start">
             <motion.h1
               initial={{ opacity: 0, y: 15 }}
               animate={
@@ -157,14 +157,14 @@ export default function Hero() {
                   : { opacity: 0, y: 15 }
               }
               transition={{ delay: 0.25, duration: 0.6 }}
-              className="text-3xl sm:text-5xl lg:text-6xl font-black leading-[1.15] sm:leading-[1.05] tracking-tight drop-shadow-md"
+              className="text-3xl sm:text-5xl  lg:text-6xl font-['Lugrasimo'] leading-[1.15] tracking-widest sm:leading-[1.05] font-bold drop-shadow-md"
             >
-              Live Green.
+              Live Green
               <br />
-              Live Serene.
+              Live Serene
               <br />
-              <span className="font-display italic text-lime-400 drop-shadow-[0_2px_12px_rgba(163,230,53,0.45)] underline decoration-lime-400/60 underline-offset-4 sm:underline-offset-8">
-                Live Hillsite.
+              <span className="font-display  text-lime-400 drop-shadow-[0_2px_12px_rgba(163,230,53,0.45)] underline decoration-lime-400/60 underline-offset-4 sm:underline-offset-8">
+                Live Hillsite
               </span>
             </motion.h1>
 
@@ -178,8 +178,8 @@ export default function Hero() {
               transition={{ delay: 0.4, duration: 0.6 }}
               className="text-xs sm:text-base font-medium text-gray-100 max-w-[280px] sm:max-w-md leading-relaxed px-2 sm:px-0"
             >
-              Premium Plots &amp; Villas in a Peaceful, Green and Gated
-              Community.
+              A Land Close to Nature in a Peaceful, Green, and Eco-Friendly
+              Environment.
             </motion.p>
           </div>
 
