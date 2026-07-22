@@ -3,76 +3,41 @@ import React from "react";
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-950 text-slate-300 font-sans border-t border-lime-400/20 antialiased">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
-        {/* Main Flex Section */}
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8 lg:gap-16 mb-8">
-          {/* Left: Contact Info */}
-          <div className="flex flex-col gap-5">
-            <div className="flex items-center gap-3">
-              <span className="w-10 h-10 rounded-full bg-[#0d1a12] border border-lime-400/15 flex items-center justify-center text-lime-400 shrink-0">
-                <MapPinIcon size={17} />
-              </span>
-              <span className="text-sm text-white font-semibold leading-snug">
-                Mangalam, Yelagiri, Mangalam R.F.,
-                <br />
-                Tamil Nadu 635853
-              </span>
-            </div>
-
-            <a
-              href="tel:+9551284478"
-              className="flex items-center gap-3 group w-fit"
-            >
-              <span className="w-10 h-10 rounded-full bg-[#0d1a12] border border-lime-400/15 flex items-center justify-center text-lime-400 shrink-0 group-hover:bg-lime-400 group-hover:text-[#0b1710] group-hover:border-lime-400 transition-all duration-200">
-                <PhoneIcon size={17} />
-              </span>
-              <span className="text-sm text-white font-semibold group-hover:text-lime-400 transition-colors duration-200">
-                +91 95512 84478
-              </span>
-            </a>
-
-            <a
-              href="mailto:thiruyh@gmail.com"
-              className="flex items-center gap-3 group w-fit"
-            >
-              <span className="w-10 h-10 rounded-full bg-[#0d1a12] border border-lime-400/15 flex items-center justify-center text-lime-400 shrink-0 group-hover:bg-lime-400 group-hover:text-[#0b1710] group-hover:border-lime-400 transition-all duration-200">
-                <MailIcon size={17} />
-              </span>
-              <span className="text-sm text-lime-400 font-semibold underline underline-offset-2 decoration-lime-400/40 group-hover:decoration-lime-400 transition-colors duration-200">
-                thiruyh@gmail.com
-              </span>
-            </a>
-          </div>
-
-          {/* Right: About the company */}
-          <div className="flex flex-col gap-3 max-w-md">
-            <div className="flex items-center gap-2 mb-1">
+    <footer className="bg-slate-950 border-t border-lime-400/20 text-slate-300">
+      <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-6 lg:py-8">
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10">
+          {/* Company */}
+          <div>
+            <div className="flex items-center gap-2.5 mb-3">
               <img
                 src="/hillside/Hillsite-Favicon.webp"
-                alt="Connect You Real Estate Logo"
-                className="h-8 w-auto brightness-110"
+                alt="Hill Site"
+                className="h-8 w-auto"
               />
-              <h4 className="text-sm font-semibold text-white">
-                About the company
-              </h4>
+
+              <div>
+                <h3 className="text-lg font-bold text-white">Hill Site</h3>
+
+                <p className="text-xs text-lime-400">Premium Land Investment</p>
+              </div>
             </div>
-            <p className="text-xs md:text-sm text-slate-400 leading-relaxed font-normal">
-              At Hillsite, we offer exclusive land in the tranquil beauty of
-              Yelagiri Hills, handpicked for their scenic views, privacy, and
-              connection to nature.
+
+            <p className="text-sm leading-6 text-slate-400">
+              Discover premium plots in the heart of Yelagiri Hills. Every
+              property is carefully selected for scenic mountain views, peaceful
+              surroundings, clean air and long-term investment value.
             </p>
 
             {/* Social Icons */}
-            <div className="flex items-center gap-3 mt-1">
-              {/* Facebook */}
+            <div className="flex items-center gap-2.5 mt-3">
               <a
                 href="#"
-                aria-label="Facebook"
-                className="w-9 h-9 rounded-full bg-[#0d1a12] border border-lime-400/15 flex items-center justify-center hover:bg-lime-400 hover:text-[#0b1710] hover:border-lime-400 text-slate-400 transition-all duration-200"
+                className="w-8 h-8 rounded-full border border-lime-400/15 bg-[#0d1a12] flex items-center justify-center hover:bg-lime-400 hover:text-black transition"
               >
+                {/* Facebook */}
                 <svg
-                  className="w-4 h-4"
+                  className="w-3.5 h-3.5"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -80,14 +45,13 @@ export default function Footer() {
                 </svg>
               </a>
 
-              {/* Instagram */}
               <a
                 href="#"
-                aria-label="Instagram"
-                className="w-9 h-9 rounded-full bg-[#0d1a12] border border-lime-400/15 flex items-center justify-center hover:bg-lime-400 hover:text-[#0b1710] hover:border-lime-400 text-slate-400 transition-all duration-200"
+                className="w-8 h-8 rounded-full border border-lime-400/15 bg-[#0d1a12] flex items-center justify-center hover:bg-lime-400 hover:text-black transition"
               >
+                {/* Instagram */}
                 <svg
-                  className="w-4 h-4"
+                  className="w-3.5 h-3.5"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -95,14 +59,13 @@ export default function Footer() {
                 </svg>
               </a>
 
-              {/* LinkedIn */}
               <a
                 href="#"
-                aria-label="LinkedIn"
-                className="w-9 h-9 rounded-full bg-[#0d1a12] border border-lime-400/15 flex items-center justify-center hover:bg-lime-400 hover:text-[#0b1710] hover:border-lime-400 text-slate-400 transition-all duration-200"
+                className="w-8 h-8 rounded-full border border-lime-400/15 bg-[#0d1a12] flex items-center justify-center hover:bg-lime-400 hover:text-black transition"
               >
+                {/* LinkedIn */}
                 <svg
-                  className="w-4 h-4"
+                  className="w-3.5 h-3.5"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -110,14 +73,13 @@ export default function Footer() {
                 </svg>
               </a>
 
-              {/* Twitter / X */}
               <a
                 href="#"
-                aria-label="Twitter"
-                className="w-9 h-9 rounded-full bg-[#0d1a12] border border-lime-400/15 flex items-center justify-center hover:bg-lime-400 hover:text-[#0b1710] hover:border-lime-400 text-slate-400 transition-all duration-200"
+                className="w-8 h-8 rounded-full border border-lime-400/15 bg-[#0d1a12] flex items-center justify-center hover:bg-lime-400 hover:text-black transition"
               >
+                {/* X */}
                 <svg
-                  className="w-4 h-4"
+                  className="w-3.5 h-3.5"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -126,15 +88,138 @@ export default function Footer() {
               </a>
             </div>
           </div>
+
+          {/* Quick Links */}
+
+          <div>
+            <h3 className="text-white text-base font-semibold mb-3">
+              Quick Links
+            </h3>
+
+            <ul className="space-y-2 text-sm">
+              <li>
+                <a href="/" className="hover:text-lime-400 transition">
+                  Home
+                </a>
+              </li>
+
+              <li>
+                <a href="/about" className="hover:text-lime-400 transition">
+                  About Us
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="/properties"
+                  className="hover:text-lime-400 transition"
+                >
+                  Properties
+                </a>
+              </li>
+
+              <li>
+                <a href="/gallery" className="hover:text-lime-400 transition">
+                  Gallery
+                </a>
+              </li>
+
+              <li>
+                <a href="/contact" className="hover:text-lime-400 transition">
+                  Contact
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h3 className="text-white text-base font-semibold mb-3">
+              Contact Us
+            </h3>
+
+            <div className="space-y-3">
+              {/* Address */}
+              <div className="flex items-start gap-3">
+                <span className="w-9 h-9 rounded-full bg-[#0d1a12] border border-lime-400/15 flex items-center justify-center text-lime-400 shrink-0">
+                  <MapPinIcon size={16} />
+                </span>
+
+                <div>
+                  <h4 className="text-white text-sm font-medium">
+                    Office Address
+                  </h4>
+
+                  <p className="text-xs text-slate-400 leading-5">
+                    Mangalam, Yelagiri, Mangalam R.F., Tamil Nadu - 635853
+                  </p>
+                </div>
+              </div>
+
+              {/* Phone */}
+
+              <a
+                href="tel:+919551284478"
+                className="flex items-start gap-3 group"
+              >
+                <span className="w-9 h-9 rounded-full bg-[#0d1a12] border border-lime-400/15 flex items-center justify-center text-lime-400 group-hover:bg-lime-400 group-hover:text-black transition shrink-0">
+                  <PhoneIcon size={16} />
+                </span>
+
+                <div>
+                  <h4 className="text-white text-sm font-medium">
+                    Phone Number
+                  </h4>
+
+                  <p className="text-xs text-slate-400 group-hover:text-lime-400 transition">
+                    +91 95512 84478
+                  </p>
+                </div>
+              </a>
+
+              {/* Email */}
+
+              <a
+                href="mailto:thiruyh@gmail.com"
+                className="flex items-start gap-3 group"
+              >
+                <span className="w-9 h-9 rounded-full bg-[#0d1a12] border border-lime-400/15 flex items-center justify-center text-lime-400 group-hover:bg-lime-400 group-hover:text-black transition shrink-0">
+                  <MailIcon size={16} />
+                </span>
+
+                <div>
+                  <h4 className="text-white text-sm font-medium">
+                    Email Address
+                  </h4>
+
+                  <p className="text-xs text-lime-400 underline underline-offset-2">
+                    thiruyh@gmail.com
+                  </p>
+                </div>
+              </a>
+            </div>
+          </div>
         </div>
 
-        {/* Divider Split */}
-        <div className="border-t border-lime-400/10 my-4"></div>
+        {/* Divider */}
 
-        {/* Bottom Section: Copyright */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="text-center sm:text-left text-xs text-slate-500 font-normal">
-            © {new Date().getFullYear()} Hill Site. All Rights Reserved.
+        <div className="border-t border-lime-400/10 mt-6 pt-4">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-2 text-center">
+            <p className="text-xs text-slate-500">
+              © {new Date().getFullYear()} Hill Site. All Rights Reserved.
+            </p>
+
+            <p className="text-xs text-slate-500">
+              Designed & Developed by{" "}
+              <a
+                href="https://amigowebster.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-lime-400 hover:text-lime-300 font-semibold transition"
+              >
+                amigowebster.com
+              </a>
+            </p>
           </div>
         </div>
       </div>
