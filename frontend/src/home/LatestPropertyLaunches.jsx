@@ -274,12 +274,12 @@ export default function LatestPropertyLaunches() {
               <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-lime-400 shrink-0" />
             </div>
             <h2 className="uppercase leading-none">
-              <span className="block text-[18px] sm:text-[20px] md:text-[22px] font-extrabold tracking-[0.24em] text-lime-400">
+              <span className="block text-[18px] sm:text-[20px] md:text-[22px] font-extrabold tracking-wider text-lime-400">
                 ELITE ESTATES
               </span>
 
-              <span className="block mt-1 text-[18px] sm:text-[34px] md:text-[36px] font-black tracking-tight text-white">
-                5 ACRES
+              <span className="block mt-1 text-[22px] sm:text-[20px] md:text-[22px] font-black tracking-tight text-white">
+                ABOVE 1 ACRES
               </span>
             </h2>
             {/* <span className="hidden sm:block w-14 md:w-16 h-px bg-white/20" /> */}

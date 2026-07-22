@@ -6,20 +6,22 @@ export default function Footer() {
     <footer className="bg-slate-950 border-t border-lime-400/20 text-slate-300">
       <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-6 lg:py-8">
         {/* Main Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10">
           {/* Company */}
           <div>
-            <div className="flex items-center gap-2.5 mb-3">
+            <div className="flex items-center  mb-3">
               <img
                 src="/hillside/Hillsite-Favicon.webp"
                 alt="Hill Site"
-                className="h-8 w-auto"
+                className="h-10 w-auto"
               />
 
               <div>
-                <h3 className="text-lg font-bold text-white">Hill Site</h3>
+                <h1 className="font-['Lugrasimo'] text-white text-[22px] md:text-[20px] tracking-wide">
+                  Hillsite
+                </h1>
 
-                <p className="text-xs text-lime-400">Premium Land Investment</p>
+                {/* <p className="text-xs text-lime-400">Premium Land Investment</p> */}
               </div>
             </div>
 
@@ -91,7 +93,7 @@ export default function Footer() {
 
           {/* Quick Links */}
 
-          <div>
+          {/* <div>
             <h3 className="text-white text-base font-semibold mb-3">
               Quick Links
             </h3>
@@ -130,7 +132,7 @@ export default function Footer() {
                 </a>
               </li>
             </ul>
-          </div>
+          </div> */}
 
           {/* Contact */}
           <div>
@@ -151,7 +153,7 @@ export default function Footer() {
                   </h4>
 
                   <p className="text-xs text-slate-400 leading-5">
-                    Mangalam, Yelagiri, Mangalam R.F., Tamil Nadu - 635853
+                    Mangalam, Yelagiri Hills, Tamil Nadu - 635853
                   </p>
                 </div>
               </div>

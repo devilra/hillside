@@ -13,6 +13,7 @@ import {
   Users,
   MapPin,
 } from "lucide-react";
+import Typewriter from "typewriter-effect";
 
 export default function Hero() {
   const [isPreloaderFinished, setIsPreloaderFinished] = useState(
@@ -137,10 +138,10 @@ export default function Hero() {
               <Home className="w-6 h-6 text-lime-400" strokeWidth={2.2} />
             </div>
             <div>
-              <div className="text-2xl font-black tracking-tight leading-none">
+              <div className="text-2xl font-['Lugrasimo'] font-black tracking-tight leading-none">
                 Hillsite
               </div>
-              <div className="text-[10px] font-bold tracking-[0.2em] text-lime-400 mt-1">
+              <div className="text-[10px] font-['Lugrasimo'] font-bold tracking-[0.2em] text-lime-400 mt-1">
                 LIVE CLOSE TO NATURE
               </div>
             </div>
@@ -149,24 +150,24 @@ export default function Hero() {
           {/* Core Brand & Typography Stack */}
           {/* Core Brand & Typography Stack */}
           <div className="space-y-6 max-w-3xl text-left text-white flex flex-col items-start">
-            <motion.h1
-              initial={{ opacity: 0, y: 15 }}
-              animate={
-                isPreloaderFinished
-                  ? { opacity: 1, y: 0 }
-                  : { opacity: 0, y: 15 }
-              }
-              transition={{ delay: 0.25, duration: 0.6 }}
-              className="text-3xl sm:text-5xl  lg:text-6xl font-['Lugrasimo'] leading-[1.15] tracking-widest sm:leading-[1.05] font-bold drop-shadow-md"
-            >
-              Live Green
-              <br />
-              Live Serene
-              <br />
-              <span className="font-display  text-lime-400 drop-shadow-[0_2px_12px_rgba(163,230,53,0.45)] underline decoration-lime-400/60 underline-offset-4 sm:underline-offset-8">
-                Live Hillsite
-              </span>
-            </motion.h1>
+            {/* <motion.h1
+    initial={{ opacity: 0, y: 15 }}
+    animate={
+      isPreloaderFinished
+        ? { opacity: 1, y: 0 }
+        : { opacity: 0, y: 15 }
+    }
+    transition={{ delay: 0.25, duration: 0.6 }}
+    className="text-3xl sm:text-5xl  lg:text-6xl font-['Lugrasimo'] leading-[1.15] tracking-widest sm:leading-[1.05] font-bold drop-shadow-md"
+  >
+    Live Green
+    <br />
+    Live Serene
+    <br />
+    <span className="font-display  text-lime-400 drop-shadow-[0_2px_12px_rgba(163,230,53,0.45)] underline decoration-lime-400/60 underline-offset-4 sm:underline-offset-8">
+      Live Hillsite
+    </span>
+  </motion.h1> */}
 
             <motion.p
               initial={{ opacity: 0, y: 15 }}
@@ -176,11 +177,33 @@ export default function Hero() {
                   : { opacity: 0, y: 15 }
               }
               transition={{ delay: 0.4, duration: 0.6 }}
-              className="text-xs sm:text-base font-medium text-gray-100 max-w-[280px] sm:max-w-md leading-relaxed px-2 sm:px-0"
+              className="text-2xl font-['Lugrasimo'] md:text-3xl font-bold text-gray-100 max-w-[380px] sm:max-w-xl leading-relaxed px-2 sm:px-0"
             >
               A Land Close to Nature in a Peaceful, Green, and Eco-Friendly
               Environment.
             </motion.p>
+
+            {/* NEW: Dynamic typewriter paragraph in lime color */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={
+                isPreloaderFinished
+                  ? { opacity: 1, y: 0 }
+                  : { opacity: 0, y: 15 }
+              }
+              transition={{ delay: 0.55, duration: 0.6 }}
+              className="text-xl md:text-2xl font-['Lugrasimo'] font-bold text-lime-400 max-w-95 sm:max-w-xl leading-relaxed px-2 sm:px-0"
+            >
+              <Typewriter
+                options={{
+                  strings: ["Live Green", "Live Serene", "Live Hillsite"],
+                  autoStart: true,
+                  loop: true,
+                  delay: 60,
+                  deleteSpeed: 40,
+                }}
+              />
+            </motion.div>
           </div>
 
           {/* Feature Icon Row */}
@@ -191,7 +214,7 @@ export default function Hero() {
               isPreloaderFinished ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
             }
             transition={{ delay: 0.55, duration: 0.6 }}
-            className="flex flex-nowrap items-start justify-between sm:justify-start gap-2 sm:gap-8 pt-2 w-full sm:w-auto"
+            className="flex flex-nowrap items-start justify-between sm:justify-start gap-2 sm:gap-8 pt-2 pb-2 md:pb-20 w-full sm:w-auto"
           >
             {topFeatures.map(({ label, icon: Icon }) => (
               <div
@@ -282,7 +305,7 @@ export default function Hero() {
           isPreloaderFinished ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
         }
         transition={{ delay: 0.85, duration: 0.6 }}
-        className="hidden sm:block absolute bottom-0 left-0 right-0 z-10 border-t border-white/10 bg-black/40 backdrop-blur-md"
+        className="hidden sm:block absolute bottom-0   left-0 right-0 z-10 border-t border-white/10 bg-black/40 backdrop-blur-md"
       >
         <Container className="py-4">
           <div className="flex flex-wrap items-center justify-center sm:justify-between gap-x-8 gap-y-3">

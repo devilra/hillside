@@ -268,12 +268,12 @@ export default function SmallMovingProjects() {
               <Mountain className="w-5 h-5 md:w-6 md:h-6 text-lime-400 shrink-0" />
             </div>
             <h2 className="uppercase leading-none">
-              <span className="block text-[18px] sm:text-[20px] md:text-[22px] font-extrabold tracking-[0.24em] text-lime-400">
+              <span className="block text-[18px] sm:text-[20px] md:text-[22px] font-extrabold tracking-wider text-lime-400">
                 SMALL PLOTS
               </span>
 
-              <span className="block mt-1 text-[22px] sm:text-[34px] md:text-[36px] font-black tracking-tight text-white">
-                25 CENTS
+              <span className="block mt-1 text-[22px] sm:text-[20px] md:text-[22px] font-black tracking-tight text-white">
+                UPTO 25 CENTS
               </span>
             </h2>
             {/* <span className="hidden sm:block w-14 md:w-16 h-px bg-white/20" /> */}
