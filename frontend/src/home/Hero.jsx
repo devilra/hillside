@@ -138,10 +138,10 @@ export default function Hero() {
               <Home className="w-6 h-6 text-lime-400" strokeWidth={2.2} />
             </div>
             <div>
-              <div className="text-2xl font-['Lugrasimo'] font-black tracking-tight leading-none">
+              <div className="text-2xl font-['Science Gothic'] tracking-widest leading-none">
                 Hillsite
               </div>
-              <div className="text-[10px] font-['Lugrasimo'] font-bold tracking-[0.2em] text-lime-400 mt-1">
+              <div className="text-[10px] font-['Science Gothic'] font-bold tracking-[0.2em] text-lime-400 mt-1">
                 LIVE CLOSE TO NATURE
               </div>
             </div>
@@ -177,7 +177,7 @@ export default function Hero() {
                   : { opacity: 0, y: 15 }
               }
               transition={{ delay: 0.4, duration: 0.6 }}
-              className="text-2xl font-['Lugrasimo'] md:text-3xl font-bold text-gray-100 max-w-[380px] sm:max-w-xl leading-relaxed px-2 sm:px-0"
+              className="text-2xl font-['Science Gothic'] md:text-3xl  text-gray-100 max-w-[380px] sm:max-w-xl leading-relaxed px-2 sm:px-0"
             >
               A Land Close to Nature in a Peaceful, Green, and Eco-Friendly
               Environment.
@@ -192,7 +192,7 @@ export default function Hero() {
                   : { opacity: 0, y: 15 }
               }
               transition={{ delay: 0.55, duration: 0.6 }}
-              className="text-xl md:text-2xl font-['Lugrasimo'] font-bold text-lime-400 max-w-95 sm:max-w-xl leading-relaxed px-2 sm:px-0"
+              className="text-xl md:text-2xl font-['Science Gothic']  text-lime-400 max-w-95 sm:max-w-xl leading-relaxed px-2 sm:px-0"
             >
               <Typewriter
                 options={{

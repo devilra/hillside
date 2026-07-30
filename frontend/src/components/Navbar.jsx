@@ -51,7 +51,7 @@ export default function Navbar() {
           />
 
           <div className="leading-none">
-            <h1 className="font-['Lugrasimo'] text-white text-[22px] md:text-[28px] tracking-wide">
+            <h1 className="font-['Science Gothic'] text-white text-[22px] md:text-[28px] tracking-wide">
               Hillsite
             </h1>
           </div>

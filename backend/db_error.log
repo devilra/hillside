@@ -1,0 +1,10 @@
+Error Time: 2026-07-28T11:03:31.672Z
+Error Message: Too many keys specified; max 64 keys allowed
+Stack: Error
+    at Query.run (D:\AmigoProjects\hillside-main\hillside-main\backend\node_modules\sequelize\lib\dialects\mysql\query.js:52:25)
+    at D:\AmigoProjects\hillside-main\hillside-main\backend\node_modules\sequelize\lib\sequelize.js:315:28
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async User.sync (D:\AmigoProjects\hillside-main\hillside-main\backend\node_modules\sequelize\lib\model.js:984:11)
+    at async Sequelize.sync (D:\AmigoProjects\hillside-main\hillside-main\backend\node_modules\sequelize\lib\sequelize.js:377:9)
+    at async seedDatabase (file:///D:/AmigoProjects/hillside-main/hillside-main/backend/models/dbInit.js:10:5)
+    at async startServer (file:///D:/AmigoProjects/hillside-main/hillside-main/backend/index.js:111:5)
