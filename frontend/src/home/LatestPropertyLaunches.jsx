@@ -13,6 +13,21 @@ import {
 import BorderGlow from "../components/BorderGlow";
 import API_URL from "../app";
 
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return "";
+
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    return imagePath;
+  }
+
+  if (imagePath.startsWith("/images/")) {
+    const baseUrl = API_URL.replace(/\/$/, "");
+    return `${baseUrl}${imagePath}`;
+  }
+
+  return imagePath;
+};
+
 // ─── Seeded Fallback Property Data (Updated for Yelagiri) ────────────────────
 const DEFAULT_PROJECTS = [
   {
@@ -79,7 +94,7 @@ function PropertyCard({ project }) {
           {/* Media Window */}
           <div className="relative overflow-hidden aspect-[13/9]  lg:aspect-[23/9] bg-[#0b1710]">
             <img
-              src={project.image}
+              src={getImageUrl(project.image)}
               alt={project.title}
               className="w-full h-full object-cover  transition-transform duration-700 ease-out"
               onError={(e) => {

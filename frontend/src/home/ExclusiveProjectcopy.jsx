@@ -15,6 +15,21 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import API_URL from "../app";
 
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return "";
+
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    return imagePath;
+  }
+
+  if (imagePath.startsWith("/images/")) {
+    const baseUrl = API_URL.replace(/\/$/, "");
+    return `${baseUrl}${imagePath}`;
+  }
+
+  return imagePath;
+};
+
 // ─── Default Fallback Project Data ───────────────────────────────────────────
 const DEFAULT_PROJECTS = [
   {
@@ -50,7 +65,7 @@ function ProjectCard({ project }) {
       <div className="relative md:w-[52%] flex-shrink-0 min-h-[260px] md:min-h-[380px] overflow-hidden bg-[#0b1710]">
         <img
           src={
-            project.images[0] ||
+            getImageUrl(project.images[0]) ||
             "https://placehold.co/800x480/0b1710/a3e635?text=Property"
           }
           alt={`${project.name} view`}
