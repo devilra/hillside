@@ -58,7 +58,8 @@ const FALLBACK_PROJECTS = [
     reraId: "",
     amenities: "[]",
     description: "",
-    mainImage: "https://res.cloudinary.com/da4bopyz9/image/upload/v1784953340/real-estate-projects/yjki4d4xepku36lsxaaj.jpg",
+    mainImage:
+      "https://res.cloudinary.com/da4bopyz9/image/upload/v1784953340/real-estate-projects/yjki4d4xepku36lsxaaj.jpg",
     ownerName: "test",
     area: "test",
     waterSource: "test",
@@ -72,11 +73,12 @@ const FALLBACK_PROJECTS = [
     ebConnectivity: "Available",
     legalVerification: "Pending",
     view360: "test",
-    galleryImages: "[\"https://res.cloudinary.com/da4bopyz9/image/upload/v1784953345/real-estate-projects/gd8rlhc6s8urnbivesel.jpg\",\"https://res.cloudinary.com/da4bopyz9/image/upload/v1784953346/real-estate-projects/j7udrfdm05scxaazn5za.jpg\",\"https://res.cloudinary.com/da4bopyz9/image/upload/v1784953349/real-estate-projects/l7dkwrdyzcuit0repod1.jpg\",\"https://res.cloudinary.com/da4bopyz9/image/upload/v1784953350/real-estate-projects/zihq5eqyovudl9qpgdkj.jpg\"]",
+    galleryImages:
+      '["https://res.cloudinary.com/da4bopyz9/image/upload/v1784953345/real-estate-projects/gd8rlhc6s8urnbivesel.jpg","https://res.cloudinary.com/da4bopyz9/image/upload/v1784953346/real-estate-projects/j7udrfdm05scxaazn5za.jpg","https://res.cloudinary.com/da4bopyz9/image/upload/v1784953349/real-estate-projects/l7dkwrdyzcuit0repod1.jpg","https://res.cloudinary.com/da4bopyz9/image/upload/v1784953350/real-estate-projects/zihq5eqyovudl9qpgdkj.jpg"]',
     videos: [
       "/videos/1784953183118-a2b7287db150a523.mp4",
-      "/videos/1784953188135-1e194b3a2186a8f7.mp4"
-    ]
+      "/videos/1784953188135-1e194b3a2186a8f7.mp4",
+    ],
   },
   {
     routeSubpath: "/scenic-valley-plots",
@@ -495,6 +497,7 @@ export default function PropertyDetailPage() {
   const [loading, setLoading] = useState(true);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [lightbox, setLightbox] = useState(null);
+  const [activeVideo, setActiveVideo] = useState(null);
 
   // Tab selections
   const [activeTab, setActiveTab] = useState("overview");
@@ -624,7 +627,12 @@ export default function PropertyDetailPage() {
     .filter(Boolean);
 
   // Main image + gallery images + videos
-  const galleryMedia = [...mainImageMedia, ...imageMedia, ...videoMedia, ...youtubeMedia];
+  const galleryMedia = [
+    ...mainImageMedia,
+    ...imageMedia,
+    ...videoMedia,
+    ...youtubeMedia,
+  ];
 
   const carouselMedia =
     galleryMedia.length > 0
@@ -638,7 +646,9 @@ export default function PropertyDetailPage() {
           },
         ];
 
-  const carouselImages = carouselMedia.filter(media => media.type === "image");
+  const carouselImages = carouselMedia.filter(
+    (media) => media.type === "image",
+  );
 
   const aerialMedia = carouselMedia[0];
 
@@ -669,7 +679,14 @@ export default function PropertyDetailPage() {
 
   const navTabs = [
     { label: "Overview", id: "overview" },
-    (project?.ownerName || project?.waterSource || project?.fencingType || project?.nearestRoad || project?.ebConnectivity || project?.legalVerification) ? { label: "Highlights", id: "highlights" } : null,
+    project?.ownerName ||
+    project?.waterSource ||
+    project?.fencingType ||
+    project?.nearestRoad ||
+    project?.ebConnectivity ||
+    project?.legalVerification
+      ? { label: "Highlights", id: "highlights" }
+      : null,
     amenitiesList.length > 0 ? { label: "Amenities", id: "amenities" } : null,
     carouselMedia.length > 0 ? { label: "Gallery", id: "gallery" } : null,
   ].filter(Boolean);
@@ -713,22 +730,6 @@ export default function PropertyDetailPage() {
     getProjectDetail();
   }, [slug, location.pathname]);
 
-  // Highlight active nav tab on scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      const navH = 56;
-      for (let i = navTabs.length - 1; i >= 0; i--) {
-        const el = document.getElementById(navTabs[i].id);
-        if (!el) continue;
-        if (el.getBoundingClientRect().top <= navH + 20) {
-          setActiveTab(navTabs[i].id);
-          break;
-        }
-      }
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [navTabs]);
 
   // Auto-advance carousel
   useEffect(() => {
@@ -762,207 +763,128 @@ export default function PropertyDetailPage() {
       <div className="bg-slate-950 pb-10 font-sans">
         {/* ── Gallery Section ─────────────────────────────────────── */}
         <div className="max-w-6xl mx-auto px-4 pt-6 pt-16 md:pt-24">
-          <div className="flex flex-col lg:flex-row gap-2 h-auto lg:h-[360px]">
-            {/* Left: Carousel */}
-            <div className="relative w-full lg:flex-[1.55] h-[250px] sm:h-[320px] lg:h-auto rounded-lg overflow-hidden cursor-pointer group">
-              {carouselMedia.map((media, idx) => (
-                <div
-                  key={media.id}
-                  className={`absolute inset-0 transition-opacity duration-700 ${
-                    idx === carouselIndex
-                      ? "opacity-100 z-[1]"
-                      : "opacity-0 z-0 pointer-events-none"
-                  }`}
-                >
-                  {media.type === "video" ? (
+          <div className="relative w-full h-[250px] sm:h-[380px] lg:h-[450px] rounded-lg overflow-hidden cursor-pointer group">
+            {carouselMedia.map((media, idx) => (
+              <div
+                key={media.id}
+                onClick={() => {
+                  if (media.type === "video" || media.type === "youtube") {
+                    setActiveVideo(media);
+                  } else {
+                    setLightbox({
+                      images: carouselMedia,
+                      startIndex: idx,
+                    });
+                  }
+                }}
+                className={`absolute inset-0 transition-opacity duration-700 ${
+                  idx === carouselIndex
+                    ? "opacity-100 z-[1]"
+                    : "opacity-0 z-0 pointer-events-none"
+                }`}
+              >
+                {media.type === "video" ? (
+                  <div className="w-full h-full relative">
                     <video
                       src={media.src}
                       className="w-full h-full object-cover"
-                      controls
                       playsInline
+                      muted
                       preload="metadata"
                     />
-                  ) : media.type === "youtube" ? (
-                    <div className="w-full h-full relative">
-                      <img
-                        src={media.thumbnail}
-                        alt={media.alt}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.src = media.fallbackThumbnail;
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                        <div className="w-14 h-14 bg-red-600 rounded-full flex items-center justify-center shadow-lg hover:bg-red-700 hover:scale-105 transition-all">
-                          <svg className="w-7 h-7 fill-current text-white ml-1.5" viewBox="0 0 24 24">
-                            <path d="M8 5v14l11-7z" />
-                          </svg>
-                        </div>
+                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                      <div className="w-14 h-14 bg-lime-400 text-[#0b1710] rounded-full flex items-center justify-center shadow-lg hover:bg-lime-500 hover:scale-105 transition-all">
+                        <svg
+                          className="w-7 h-7 fill-current ml-1"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
                       </div>
                     </div>
-                  ) : (
+                  </div>
+                ) : media.type === "youtube" ? (
+                  <div className="w-full h-full relative">
                     <img
-                      src={media.src}
+                      src={media.thumbnail}
                       alt={media.alt}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        e.currentTarget.src =
-                          "https://placehold.co/800x450/e2e8f0/94a3b8?text=Property";
+                        e.currentTarget.src = media.fallbackThumbnail;
                       }}
                     />
-                  )}
-
-                  {(media.type === "video" || media.type === "youtube") && (
-                    <div className={`absolute top-3 left-3 backdrop-blur-sm text-white text-[10px] font-semibold px-2.5 py-1 rounded-full pointer-events-none ${media.type === "youtube" ? "bg-red-650" : "bg-black/70"}`}>
-                      {media.type === "youtube" ? "YOUTUBE" : "VIDEO"}
+                    <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
+                      <div className="w-14 h-14 bg-red-600 rounded-full flex items-center justify-center shadow-lg hover:bg-red-750 hover:scale-105 transition-all">
+                        <svg
+                          className="w-7 h-7 fill-current text-white ml-1.5"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      </div>
                     </div>
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <img
+                    src={media.src}
+                    alt={media.alt}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src =
+                        "https://placehold.co/800x450/e2e8f0/94a3b8?text=Property";
+                    }}
+                  />
+                )}
+
+                {(media.type === "video" || media.type === "youtube") && (
+                  <div
+                    className={`absolute top-3 left-3 backdrop-blur-sm text-white text-[10px] font-semibold px-2.5 py-1 rounded-full pointer-events-none ${media.type === "youtube" ? "bg-red-650" : "bg-black/70"}`}
+                  >
+                    {media.type === "youtube" ? "YOUTUBE" : "VIDEO"}
+                  </div>
+                )}
+              </div>
+            ))}
+
+            <button
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full p-1.5 z-10 transition-all opacity-0 group-hover:opacity-100"
+              onClick={(e) => {
+                e.stopPropagation();
+                setCarouselIndex(
+                  (i) => (i - 1 + carouselMedia.length) % carouselMedia.length,
+                );
+              }}
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full p-1.5 z-10 transition-all opacity-0 group-hover:opacity-100"
+              onClick={(e) => {
+                e.stopPropagation();
+                setCarouselIndex((i) => (i + 1) % carouselMedia.length);
+              }}
+            >
+              <ChevronRight size={20} />
+            </button>
+
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+              {carouselMedia.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCarouselIndex(idx);
+                  }}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    idx === carouselIndex
+                      ? "bg-white scale-125"
+                      : "bg-white/50 hover:bg-white/80"
+                  }`}
+                />
               ))}
-
-              <div
-                className="absolute inset-0"
-                onClick={() =>
-                  setLightbox({
-                    images: carouselMedia,
-                    startIndex: carouselIndex,
-                  })
-                }
-              />
-
-              <button
-                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full p-1.5 z-10 transition-all opacity-0 group-hover:opacity-100"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCarouselIndex(
-                    (i) =>
-                      (i - 1 + carouselMedia.length) % carouselMedia.length,
-                  );
-                }}
-              >
-                <ChevronLeft size={20} />
-              </button>
-              <button
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full p-1.5 z-10 transition-all opacity-0 group-hover:opacity-100"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCarouselIndex((i) => (i + 1) % carouselMedia.length);
-                }}
-              >
-                <ChevronRight size={20} />
-              </button>
-
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-                {carouselMedia.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCarouselIndex(idx);
-                    }}
-                    className={`w-2 h-2 rounded-full transition-all ${
-                      idx === carouselIndex
-                        ? "bg-white scale-125"
-                        : "bg-white/50 hover:bg-white/80"
-                    }`}
-                  />
-                ))}
-              </div>
-              <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-3 py-1.5 rounded-md z-10 pointer-events-none">
-                {carouselMedia.length} Media
-              </div>
             </div>
-
-            {/* Right: Two stacked panels */}
-            <div className="flex flex-row lg:flex-col gap-2 flex-1">
-              <div
-                className="relative flex-1 h-[140px] sm:h-[180px] lg:h-auto rounded-lg overflow-hidden cursor-pointer group"
-                onClick={() =>
-                  setLightbox({ images: carouselMedia, startIndex: 0 })
-                }
-              >
-                {aerialMedia.type === "video" ? (
-                  <div className="w-full h-full relative">
-                    <video
-                      src={aerialMedia.src}
-                      className="w-full h-full object-cover"
-                      preload="metadata"
-                    />
-                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                      <span className="text-white text-xs font-semibold bg-black/50 px-2.5 py-1 rounded">PLAY</span>
-                    </div>
-                  </div>
-                ) : aerialMedia.type === "youtube" ? (
-                  <div className="w-full h-full relative">
-                    <img
-                      src={aerialMedia.thumbnail}
-                      alt={aerialMedia.alt}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      onError={(e) => {
-                        e.currentTarget.src = aerialMedia.fallbackThumbnail;
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                      <span className="text-white text-xs font-semibold bg-red-650 px-2.5 py-1 rounded">YOUTUBE</span>
-                    </div>
-                  </div>
-                ) : (
-                  <img
-                    src={aerialMedia.src}
-                    alt={aerialMedia.alt}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    onError={(e) => {
-                      e.target.src = `https://placehold.co/400x250/e2e8f0/94a3b8?text=Property`;
-                    }}
-                  />
-                )}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
-              </div>
-
-              <div
-                className="relative flex-1 h-[140px] sm:h-[180px] lg:h-auto rounded-lg overflow-hidden cursor-pointer group"
-                onClick={() =>
-                  setLightbox({
-                    images: carouselMedia,
-                    startIndex: 1,
-                  })
-                }
-              >
-                {sideBottomMedia[0]?.type === "video" ? (
-                  <div className="w-full h-full relative">
-                    <video
-                      src={sideBottomMedia[0].src}
-                      className="w-full h-full object-cover"
-                      preload="metadata"
-                    />
-                  </div>
-                ) : sideBottomMedia[0]?.type === "youtube" ? (
-                  <div className="w-full h-full relative">
-                    <img
-                      src={sideBottomMedia[0].thumbnail}
-                      alt={sideBottomMedia[0].alt}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      onError={(e) => {
-                        e.currentTarget.src = sideBottomMedia[0].fallbackThumbnail;
-                      }}
-                    />
-                  </div>
-                ) : (
-                  <img
-                    src={sideBottomMedia[0]?.src || aerialMedia.src}
-                    alt={sideBottomMedia[0]?.alt || "Gallery image"}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    onError={(e) => {
-                      e.target.src = `https://placehold.co/400x250/e2e8f0/94a3b8?text=Property`;
-                    }}
-                  />
-                )}
-                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/55 transition-colors duration-300 flex items-center justify-center">
-                  <span className="text-white text-2xl font-semibold tracking-wide">
-                    +{sideBottomMedia.length} More
-                  </span>
-                </div>
-              </div>
+            <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-3 py-1.5 rounded-md z-10 pointer-events-none">
+              {carouselMedia.length} Media
             </div>
           </div>
 
@@ -1014,16 +936,25 @@ export default function PropertyDetailPage() {
               </div>
 
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-5 border-t border-white/10 pt-4">
-                {((project.type !== "small_plot" && project.type !== "large_plot" && project.launchTimeline) || 
-                  ((project.type === "small_plot" || project.type === "large_plot") && (project.area || project.totalApts))) && (
+                {((project.type !== "small_plot" &&
+                  project.type !== "large_plot" &&
+                  project.launchTimeline) ||
+                  ((project.type === "small_plot" ||
+                    project.type === "large_plot") &&
+                    (project.area || project.totalApts))) && (
                   <div>
                     <p className="text-xs text-slate-500 flex items-center gap-1">
-                      <span>⊞</span> {project.type !== "small_plot" && project.type !== "large_plot" ? "Configuration" : "Plot Area"}
+                      <span>⊞</span>{" "}
+                      {project.type !== "small_plot" &&
+                      project.type !== "large_plot"
+                        ? "Configuration"
+                        : "Plot Area"}
                     </p>
                     <p className="text-sm font-semibold text-white mt-1">
-                      {project.type !== "small_plot" && project.type !== "large_plot" 
-                        ? project.launchTimeline 
-                        : (project.area || project.totalApts)}
+                      {project.type !== "small_plot" &&
+                      project.type !== "large_plot"
+                        ? project.launchTimeline
+                        : project.area || project.totalApts}
                     </p>
                   </div>
                 )}
@@ -1102,7 +1033,6 @@ export default function PropertyDetailPage() {
                   key={tab.id}
                   onClick={() => {
                     setActiveTab(tab.id);
-                    scrollToSection(tab.id);
                   }}
                   className={`relative shrink-0 px-5 py-3.5 text-sm font-medium transition-colors duration-200 ${
                     activeTab === tab.id
@@ -1126,202 +1056,264 @@ export default function PropertyDetailPage() {
             {/* Left Column Content */}
             <div className="w-full flex-1 min-w-0 space-y-6">
               {/* Overview Section */}
-              <section
-                id="overview"
-                className="bg-[#0d1a12] border border-white/10 rounded-xl p-6 scroll-mt-24"
-              >
-                <h2 className="text-xl font-bold text-white mb-5">Overview</h2>
+              {activeTab === "overview" && (
+                <section
+                  id="overview"
+                  className="bg-[#0d1a12] border border-white/10 rounded-xl p-6 scroll-mt-24"
+                >
+                  <h2 className="text-xl font-bold text-white mb-5">Overview</h2>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-5 gap-x-4 mb-5">
-                  {project.possessionDate && (
-                    <div>
-                      <p className="text-xs text-slate-500 uppercase tracking-wide">
-                        Possession Start Date
-                      </p>
-                      <p className="text-sm font-semibold text-white mt-1">
-                        {project.possessionDate}
-                      </p>
-                    </div>
-                  )}
-                  {project.status && (
-                    <div>
-                      <p className="text-xs text-slate-500 uppercase tracking-wide">
-                        Status
-                      </p>
-                      <p className="text-sm font-semibold text-lime-400 mt-1">
-                        {project.status}
-                      </p>
-                    </div>
-                  )}
-                  {(project.area || project.totalApts) && (
-                    <div>
-                      <p className="text-xs text-slate-500 uppercase tracking-wide">
-                        Total Area / Plots
-                      </p>
-                      <p className="text-sm font-semibold text-white mt-1">
-                        {project.area || project.totalApts}
-                      </p>
-                    </div>
-                  )}
-                  {project.launchTimeline && (
-                    <div>
-                      <p className="text-xs text-slate-500 uppercase tracking-wide">
-                        Launch Timeline
-                      </p>
-                      <p className="text-sm font-semibold text-white mt-1">
-                        {project.launchTimeline}
-                      </p>
-                    </div>
-                  )}
-                  {project.author && (
-                    <div>
-                      <p className="text-xs text-slate-500 uppercase tracking-wide">
-                        Availability
-                      </p>
-                      <p className="text-sm font-semibold text-lime-400 mt-1">
-                        Direct from {project.author}
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                {project.reraId && (
-                  <div className="mb-5">
-                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
-                      RERA ID
-                    </p>
-                    <p className="text-sm text-slate-300 leading-relaxed font-mono">
-                      {project.reraId}
-                    </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-5 gap-x-4 mb-5">
+                    {project.possessionDate && (
+                      <div>
+                        <p className="text-xs text-slate-500 uppercase tracking-wide">
+                          Possession Start Date
+                        </p>
+                        <p className="text-sm font-semibold text-white mt-1">
+                          {project.possessionDate}
+                        </p>
+                      </div>
+                    )}
+                    {project.status && (
+                      <div>
+                        <p className="text-xs text-slate-500 uppercase tracking-wide">
+                          Status
+                        </p>
+                        <p className="text-sm font-semibold text-lime-400 mt-1">
+                          {project.status}
+                        </p>
+                      </div>
+                    )}
+                    {(project.area || project.totalApts) && (
+                      <div>
+                        <p className="text-xs text-slate-500 uppercase tracking-wide">
+                          Total Area / Plots
+                        </p>
+                        <p className="text-sm font-semibold text-white mt-1">
+                          {project.area || project.totalApts}
+                        </p>
+                      </div>
+                    )}
+                    {project.launchTimeline && (
+                      <div>
+                        <p className="text-xs text-slate-500 uppercase tracking-wide">
+                          Launch Timeline
+                        </p>
+                        <p className="text-sm font-semibold text-white mt-1">
+                          {project.launchTimeline}
+                        </p>
+                      </div>
+                    )}
+                    {project.author && (
+                      <div>
+                        <p className="text-xs text-slate-500 uppercase tracking-wide">
+                          Availability
+                        </p>
+                        <p className="text-sm font-semibold text-lime-400 mt-1">
+                          Direct from {project.author}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                )}
 
-                {/* Salient Features (only for non-plots) */}
-                {project.type !== "small_plot" && project.type !== "large_plot" && (
-                  <div className="mb-5">
-                    <h3 className="text-lg font-bold text-white mb-3">
-                      Salient Features
-                    </h3>
-                    <ul className="space-y-2">
-                      {[
-                        "Thoroughly verified clear title deeds and clean ownership history.",
-                        "Surrounded by spectacular scenic landscape views.",
-                        "Equipped with comprehensive developer legal registry backing.",
-                        "Highly premium layout spacing ensuring top-tier infrastructure and privacy.",
-                      ].map((f) => (
-                        <li
-                          key={f}
-                          className="flex items-start gap-2 text-sm text-slate-300"
-                        >
-                          <Check
-                            size={15}
-                            className="text-lime-400 shrink-0 mt-0.5"
-                          />
-                          {f}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                  {project.reraId && (
+                    <div className="mb-5">
+                      <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
+                        RERA ID
+                      </p>
+                      <p className="text-sm text-slate-300 leading-relaxed font-mono">
+                        {project.reraId}
+                      </p>
+                    </div>
+                  )}
 
-                {/* Description */}
-                {project.description && (
-                  <div>
-                    <h3 className="text-lg font-bold text-white mb-2">
-                      More about {project.title}
-                    </h3>
-                    <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-line">
-                      {project.description}
-                    </p>
-                  </div>
-                )}
-              </section>
+                  {/* Salient Features (only for non-plots) */}
+                  {project.type !== "small_plot" &&
+                    project.type !== "large_plot" && (
+                      <div className="mb-5">
+                        <h3 className="text-lg font-bold text-white mb-3">
+                          Salient Features
+                        </h3>
+                        <ul className="space-y-2">
+                          {[
+                            "Thoroughly verified clear title deeds and clean ownership history.",
+                            "Surrounded by spectacular scenic landscape views.",
+                            "Equipped with comprehensive developer legal registry backing.",
+                            "Highly premium layout spacing ensuring top-tier infrastructure and privacy.",
+                          ].map((f) => (
+                            <li
+                              key={f}
+                              className="flex items-start gap-2 text-sm text-slate-300"
+                            >
+                              <Check
+                                size={15}
+                                className="text-lime-400 shrink-0 mt-0.5"
+                              />
+                              {f}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                  {/* Description */}
+                  {project.description && (
+                    <div>
+                      <h3 className="text-lg font-bold text-white mb-2">
+                        More about {project.title}
+                      </h3>
+                      <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-line">
+                        {project.description}
+                      </p>
+                    </div>
+                  )}
+                </section>
+              )}
 
               {/* Highlights Section */}
-              {(project.ownerName || project.waterSource || project.fencingType || project.nearestRoad || project.ebConnectivity || project.legalVerification) && (
+              {activeTab === "highlights" && (project.ownerName ||
+                project.waterSource ||
+                project.fencingType ||
+                project.nearestRoad ||
+                project.ebConnectivity ||
+                project.legalVerification) && (
                 <section
                   id="highlights"
                   className="bg-[#0d1a12] border border-white/10 rounded-xl p-6 scroll-mt-24"
                 >
-                  <h2 className="text-xl font-bold text-white mb-5">Property Highlights</h2>
+                  <h2 className="text-xl font-bold text-white mb-5">
+                    Property Highlights
+                  </h2>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6">
                     {project.ownerName && (
                       <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">Owner Name</span>
-                        <span className="text-white text-sm font-semibold">{project.ownerName}</span>
+                        <span className="text-slate-400 text-sm">
+                          Owner Name
+                        </span>
+                        <span className="text-white text-sm font-semibold">
+                          {project.ownerName}
+                        </span>
                       </div>
                     )}
                     {(project.area || project.totalApts) && (
                       <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">Total Area</span>
-                        <span className="text-white text-sm font-semibold">{project.area || project.totalApts}</span>
+                        <span className="text-slate-400 text-sm">
+                          Total Area
+                        </span>
+                        <span className="text-white text-sm font-semibold">
+                          {project.area || project.totalApts}
+                        </span>
                       </div>
                     )}
                     {project.waterSource && (
                       <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">Water Source</span>
-                        <span className="text-white text-sm font-semibold">{project.waterSource}</span>
+                        <span className="text-slate-400 text-sm">
+                          Water Source
+                        </span>
+                        <span className="text-white text-sm font-semibold">
+                          {project.waterSource}
+                        </span>
                       </div>
                     )}
                     {project.fencingType && (
                       <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">Fencing Type</span>
-                        <span className="text-white text-sm font-semibold">{project.fencingType}</span>
+                        <span className="text-slate-400 text-sm">
+                          Fencing Type
+                        </span>
+                        <span className="text-white text-sm font-semibold">
+                          {project.fencingType}
+                        </span>
                       </div>
                     )}
                     {project.landSketch && (
                       <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">Land Sketch / Survey Info</span>
-                        <span className="text-white text-sm font-semibold">{project.landSketch}</span>
+                        <span className="text-slate-400 text-sm">
+                          Land Sketch / Survey Info
+                        </span>
+                        <span className="text-white text-sm font-semibold">
+                          {project.landSketch}
+                        </span>
                       </div>
                     )}
                     {project.fmv && (
                       <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">Fair Market Value (FMV)</span>
-                        <span className="text-white text-sm font-semibold">{project.fmv}</span>
+                        <span className="text-slate-400 text-sm">
+                          Fair Market Value (FMV)
+                        </span>
+                        <span className="text-white text-sm font-semibold">
+                          {project.fmv}
+                        </span>
                       </div>
                     )}
                     {project.nearestRoad && (
                       <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">Nearest Road</span>
-                        <span className="text-white text-sm font-semibold">{project.nearestRoad}</span>
+                        <span className="text-slate-400 text-sm">
+                          Nearest Road
+                        </span>
+                        <span className="text-white text-sm font-semibold">
+                          {project.nearestRoad}
+                        </span>
                       </div>
                     )}
                     {project.distanceToMainRoad && (
                       <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">Distance to Main Road</span>
-                        <span className="text-white text-sm font-semibold">{project.distanceToMainRoad}</span>
+                        <span className="text-slate-400 text-sm">
+                          Distance to Main Road
+                        </span>
+                        <span className="text-white text-sm font-semibold">
+                          {project.distanceToMainRoad}
+                        </span>
                       </div>
                     )}
                     {project.connectionRoadWidth && (
                       <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">Connection Road Width</span>
-                        <span className="text-white text-sm font-semibold">{project.connectionRoadWidth}</span>
+                        <span className="text-slate-400 text-sm">
+                          Connection Road Width
+                        </span>
+                        <span className="text-white text-sm font-semibold">
+                          {project.connectionRoadWidth}
+                        </span>
                       </div>
                     )}
                     {project.roadType && (
                       <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">Road Type</span>
-                        <span className="text-white text-sm font-semibold">{project.roadType}</span>
+                        <span className="text-slate-400 text-sm">
+                          Road Type
+                        </span>
+                        <span className="text-white text-sm font-semibold">
+                          {project.roadType}
+                        </span>
                       </div>
                     )}
                     {project.ebConnectivity && (
                       <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">EB Connectivity</span>
-                        <span className="text-white text-sm font-semibold">{project.ebConnectivity}</span>
+                        <span className="text-slate-400 text-sm">
+                          EB Connectivity
+                        </span>
+                        <span className="text-white text-sm font-semibold">
+                          {project.ebConnectivity}
+                        </span>
                       </div>
                     )}
                     {project.legalVerification && (
                       <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">Legal Verification</span>
-                        <span className={`text-sm font-semibold ${
-                          project.legalVerification.toLowerCase() === "verified" || project.legalVerification.toLowerCase() === "completed"
-                            ? "text-emerald-400"
-                            : project.legalVerification.toLowerCase() === "pending"
-                            ? "text-amber-400"
-                            : "text-white"
-                        }`}>
+                        <span className="text-slate-400 text-sm">
+                          Legal Verification
+                        </span>
+                        <span
+                          className={`text-sm font-semibold ${
+                            project.legalVerification.toLowerCase() ===
+                              "verified" ||
+                            project.legalVerification.toLowerCase() ===
+                              "completed"
+                              ? "text-emerald-400"
+                              : project.legalVerification.toLowerCase() ===
+                                  "pending"
+                                ? "text-amber-400"
+                                : "text-white"
+                          }`}
+                        >
                           {project.legalVerification}
                         </span>
                       </div>
@@ -1331,11 +1323,20 @@ export default function PropertyDetailPage() {
                   {project.view360 && (
                     <div className="mt-6 border-t border-white/10 pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div>
-                        <h4 className="text-sm font-semibold text-white">360° Virtual Tour</h4>
-                        <p className="text-xs text-slate-400 mt-0.5">Explore the property in an immersive 360-degree environment.</p>
+                        <h4 className="text-sm font-semibold text-white">
+                          360° Virtual Tour
+                        </h4>
+                        <p className="text-xs text-slate-400 mt-0.5">
+                          Explore the property in an immersive 360-degree
+                          environment.
+                        </p>
                       </div>
                       <a
-                        href={project.view360.startsWith("http") ? project.view360 : `https://${project.view360}`}
+                        href={
+                          project.view360.startsWith("http")
+                            ? project.view360
+                            : `https://${project.view360}`
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center justify-center bg-lime-400 text-[#0b1710] font-semibold text-sm px-5 py-2.5 rounded-xl hover:bg-lime-300 transition-all duration-200"
@@ -1347,83 +1348,84 @@ export default function PropertyDetailPage() {
                 </section>
               )}
 
-
-
               {/* Floor Plan Section */}
-              {project.type !== "small_plot" && project.type !== "large_plot" && (
-                <section
-                  id="floorplan"
-                  className="bg-[#0d1a12] border border-white/10 rounded-xl p-6 scroll-mt-24"
-                >
-                  <h2 className="text-xl font-bold text-white mb-5">
-                    {project.title} Layout Plans
-                  </h2>
+              {activeTab === "overview" && project.type !== "small_plot" &&
+                project.type !== "large_plot" && (
+                  <section
+                    id="floorplan"
+                    className="bg-[#0d1a12] border border-white/10 rounded-xl p-6 scroll-mt-24"
+                  >
+                    <h2 className="text-xl font-bold text-white mb-5">
+                      {project.title} Layout Plans
+                    </h2>
 
-                  <div className="flex gap-2 mb-5 overflow-x-auto scrollbar-none pb-1">
-                    {Object.keys(FLOOR_PLANS).map((bhk) => (
-                      <button
-                        key={bhk}
-                        onClick={() => {
-                          setActiveBHK(bhk);
-                          setActivePlanIdx(0);
-                        }}
-                        className={`px-5 py-2 rounded-full text-sm font-semibold border transition-all duration-200 ${
-                          activeBHK === bhk
-                            ? "bg-lime-400 text-[#0b1710] border-lime-400"
-                            : "bg-[#0b1710] text-slate-300 border-white/10 hover:border-lime-400/50"
-                        }`}
-                      >
-                        {bhk}
+                    <div className="flex gap-2 mb-5 overflow-x-auto scrollbar-none pb-1">
+                      {Object.keys(FLOOR_PLANS).map((bhk) => (
+                        <button
+                          key={bhk}
+                          onClick={() => {
+                            setActiveBHK(bhk);
+                            setActivePlanIdx(0);
+                          }}
+                          className={`px-5 py-2 rounded-full text-sm font-semibold border transition-all duration-200 ${
+                            activeBHK === bhk
+                              ? "bg-lime-400 text-[#0b1710] border-lime-400"
+                              : "bg-[#0b1710] text-slate-300 border-white/10 hover:border-lime-400/50"
+                          }`}
+                        >
+                          {bhk}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="flex gap-0 border-b border-white/10 mb-5 overflow-x-auto">
+                      {(FLOOR_PLANS[activeBHK] || []).map((plan, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setActivePlanIdx(idx)}
+                          className={`relative shrink-0 px-4 py-2.5 text-sm transition-colors duration-200 ${
+                            activePlanIdx === idx
+                              ? "text-white font-medium"
+                              : "text-slate-400 hover:text-slate-200"
+                          }`}
+                        >
+                          {plan.label}
+                          {activePlanIdx === idx && (
+                            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400 rounded-t" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+
+                    <p className="text-2xl font-bold text-white mb-2">
+                      {currentPlan.price}
+                    </p>
+                    <FloorPlanIllustration />
+
+                    <div className="flex items-center gap-3 mt-4 flex-wrap">
+                      <div className="flex items-center gap-1.5 border border-white/10 rounded-md px-3 py-1.5 text-sm text-slate-300">
+                        <BedDouble size={15} className="text-slate-500" />
+                        {currentPlan.bed} Bedroom
+                        {currentPlan.bed > 1 ? "s" : ""}
+                      </div>
+                      <div className="flex items-center gap-1.5 border border-white/10 rounded-md px-3 py-1.5 text-sm text-slate-300">
+                        <Bath size={15} className="text-slate-500" />
+                        {currentPlan.bath} Bathroom
+                        {currentPlan.bath > 1 ? "s" : ""}
+                      </div>
+                      <div className="flex items-center gap-1.5 border border-white/10 rounded-md px-3 py-1.5 text-sm text-slate-300">
+                        <LayoutDashboard size={15} className="text-slate-500" />
+                        {currentPlan.hall} Hall
+                      </div>
+                      <button className="w-full sm:w-auto sm:ml-auto text-xs text-lime-400 hover:underline flex items-center gap-1 justify-center sm:justify-start">
+                        <Flag size={12} /> Report Error
                       </button>
-                    ))}
-                  </div>
-
-                  <div className="flex gap-0 border-b border-white/10 mb-5 overflow-x-auto">
-                    {(FLOOR_PLANS[activeBHK] || []).map((plan, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setActivePlanIdx(idx)}
-                        className={`relative shrink-0 px-4 py-2.5 text-sm transition-colors duration-200 ${
-                          activePlanIdx === idx
-                            ? "text-white font-medium"
-                            : "text-slate-400 hover:text-slate-200"
-                        }`}
-                      >
-                        {plan.label}
-                        {activePlanIdx === idx && (
-                          <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400 rounded-t" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-
-                  <p className="text-2xl font-bold text-white mb-2">
-                    {currentPlan.price}
-                  </p>
-                  <FloorPlanIllustration />
-
-                  <div className="flex items-center gap-3 mt-4 flex-wrap">
-                    <div className="flex items-center gap-1.5 border border-white/10 rounded-md px-3 py-1.5 text-sm text-slate-300">
-                      <BedDouble size={15} className="text-slate-500" />
-                      {currentPlan.bed} Bedroom{currentPlan.bed > 1 ? "s" : ""}
                     </div>
-                    <div className="flex items-center gap-1.5 border border-white/10 rounded-md px-3 py-1.5 text-sm text-slate-300">
-                      <Bath size={15} className="text-slate-500" />
-                      {currentPlan.bath} Bathroom{currentPlan.bath > 1 ? "s" : ""}
-                    </div>
-                    <div className="flex items-center gap-1.5 border border-white/10 rounded-md px-3 py-1.5 text-sm text-slate-300">
-                      <LayoutDashboard size={15} className="text-slate-500" />
-                      {currentPlan.hall} Hall
-                    </div>
-                    <button className="w-full sm:w-auto sm:ml-auto text-xs text-lime-400 hover:underline flex items-center gap-1 justify-center sm:justify-start">
-                      <Flag size={12} /> Report Error
-                    </button>
-                  </div>
-                </section>
-              )}
+                  </section>
+                )}
 
               {/* Amenities Section */}
-              {amenitiesList.length > 0 && (
+              {activeTab === "amenities" && amenitiesList.length > 0 && (
                 <section
                   id="amenities"
                   className="bg-[#0d1a12] border border-white/10 rounded-xl p-6 scroll-mt-24"
@@ -1465,91 +1467,100 @@ export default function PropertyDetailPage() {
               )}
 
               {/* Gallery Grid Section */}
-              <section
-                id="gallery"
-                className="bg-[#0d1a12] border border-white/10 rounded-xl p-6 scroll-mt-24"
-              >
-                <h2 className="text-xl font-bold text-white mb-4">
-                  {project.title} Gallery
-                </h2>
+              {activeTab === "gallery" && (
+                <section
+                  id="gallery"
+                  className="bg-[#0d1a12] border border-white/10 rounded-xl p-6 scroll-mt-24"
+                >
+                  <h2 className="text-xl font-bold text-white mb-4">
+                    {project.title} Gallery
+                  </h2>
 
-                <div className="flex gap-0 border-b border-white/10 mb-5 overflow-x-auto">
-                  {[
-                    "Elevation",
-                    "Amenities",
-                    "Floor Plans",
-                    "Neighbourhood",
-                    "Others",
-                  ].map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => setActiveGalleryTab(tab)}
-                      className={`relative shrink-0 px-4 py-2.5 text-sm transition-colors duration-200 ${
-                        activeGalleryTab === tab
-                          ? "text-white font-medium"
-                          : "text-slate-400 hover:text-slate-200"
-                      }`}
-                    >
-                      {tab}
-                      {activeGalleryTab === tab && (
-                        <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400 rounded-t" />
-                      )}
-                    </button>
-                  ))}
-                </div>
+                  <div className="flex gap-0 border-b border-white/10 mb-5 overflow-x-auto">
+                    {[
+                      "Elevation",
+                      "Amenities",
+                      "Floor Plans",
+                      "Neighbourhood",
+                      "Others",
+                    ].map((tab) => (
+                      <button
+                        key={tab}
+                        onClick={() => setActiveGalleryTab(tab)}
+                        className={`relative shrink-0 px-4 py-2.5 text-sm transition-colors duration-200 ${
+                          activeGalleryTab === tab
+                            ? "text-white font-medium"
+                            : "text-slate-400 hover:text-slate-200"
+                        }`}
+                      >
+                        {tab}
+                        {activeGalleryTab === tab && (
+                          <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400 rounded-t" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {carouselMedia.map((media, i) => (
-                    <div
-                      key={i}
-                      className="aspect-[4/3] rounded-lg overflow-hidden relative group cursor-pointer"
-                      onClick={() =>
-                        setLightbox({ images: carouselMedia, startIndex: i })
-                      }
-                    >
-                      {media.type === "video" ? (
-                        <div className="w-full h-full relative">
-                          <video
-                            src={media.src}
-                            className="w-full h-full object-cover"
-                            preload="metadata"
-                          />
-                          <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-1 group-hover:bg-black/55 transition-colors duration-300">
-                            <span className="text-white text-[10px] bg-lime-400 text-[#0b1710] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
-                              Play Video
-                            </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {carouselMedia.map((media, i) => (
+                      <div
+                        key={i}
+                        className="aspect-[4/3] rounded-lg overflow-hidden relative group cursor-pointer"
+                        onClick={() => {
+                          if (
+                            media.type === "video" ||
+                            media.type === "youtube"
+                          ) {
+                            setActiveVideo(media);
+                          } else {
+                            setLightbox({ images: carouselMedia, startIndex: i });
+                          }
+                        }}
+                      >
+                        {media.type === "video" ? (
+                          <div className="w-full h-full relative">
+                            <video
+                              src={media.src}
+                              className="w-full h-full object-cover"
+                              preload="metadata"
+                            />
+                            <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-1 group-hover:bg-black/55 transition-colors duration-300">
+                              <span className="text-white text-[10px] bg-lime-400 text-[#0b1710] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                                Play Video
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      ) : media.type === "youtube" ? (
-                        <div className="w-full h-full relative">
+                        ) : media.type === "youtube" ? (
+                          <div className="w-full h-full relative">
+                            <img
+                              src={media.thumbnail}
+                              alt={`Gallery ${i + 1}`}
+                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                              onError={(e) => {
+                                e.currentTarget.src = media.fallbackThumbnail;
+                              }}
+                            />
+                            <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-1 group-hover:bg-black/55 transition-colors duration-300">
+                              <span className="text-white text-[10px] bg-red-650 text-white font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                                Play YouTube
+                              </span>
+                            </div>
+                          </div>
+                        ) : (
                           <img
-                            src={media.thumbnail}
+                            src={media.src}
                             alt={`Gallery ${i + 1}`}
                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                             onError={(e) => {
-                              e.currentTarget.src = media.fallbackThumbnail;
+                              e.target.src = `https://placehold.co/400x300/0b1710/a3e635?text=Gallery+${i + 1}`;
                             }}
                           />
-                          <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-1 group-hover:bg-black/55 transition-colors duration-300">
-                            <span className="text-white text-[10px] bg-red-650 text-white font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
-                              Play YouTube
-                            </span>
-                          </div>
-                        </div>
-                      ) : (
-                        <img
-                          src={media.src}
-                          alt={`Gallery ${i + 1}`}
-                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                          onError={(e) => {
-                            e.target.src = `https://placehold.co/400x300/0b1710/a3e635?text=Gallery+${i + 1}`;
-                          }}
-                        />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </section>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
 
               {/* Home Loan Calculator */}
               {/* <section
@@ -1732,12 +1743,12 @@ export default function PropertyDetailPage() {
             </div>
 
             {/* Right Column Sticky Contact Form */}
-            <div className="hidden lg:block w-[300px] shrink-0 sticky top-40 self-start">
+            {/* <div className="hidden lg:block w-[300px] shrink-0 sticky top-40 self-start">
               <ContactForm
                 city={project.title}
                 subtitle={project.author || "Hillsite Developers"}
               />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -1748,6 +1759,41 @@ export default function PropertyDetailPage() {
           startIndex={lightbox.startIndex}
           onClose={() => setLightbox(null)}
         />
+      )}
+
+      {activeVideo && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm cursor-pointer"
+          onClick={() => setActiveVideo(null)}
+        >
+          <button
+            className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"
+            onClick={() => setActiveVideo(null)}
+          >
+            <X size={32} />
+          </button>
+          <div
+            className="w-full max-w-4xl aspect-video mx-4 sm:mx-10 rounded-lg overflow-hidden bg-black shadow-2xl relative cursor-default"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {activeVideo.type === "youtube" ? (
+              <iframe
+                src={`${activeVideo.src}?autoplay=1`}
+                className="w-full h-full border-none"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : (
+              <video
+                src={activeVideo.src}
+                className="w-full h-full object-contain"
+                controls
+                autoPlay
+                playsInline
+              />
+            )}
+          </div>
+        </div>
       )}
     </>
   );
