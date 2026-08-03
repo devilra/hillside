@@ -1064,56 +1064,46 @@ export default function PropertyDetailPage() {
                   <h2 className="text-xl font-bold text-white mb-5">Overview</h2>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-5 gap-x-4 mb-5">
-                    {project.possessionDate && (
-                      <div>
-                        <p className="text-xs text-slate-500 uppercase tracking-wide">
-                          Possession Start Date
-                        </p>
-                        <p className="text-sm font-semibold text-white mt-1">
-                          {project.possessionDate}
-                        </p>
-                      </div>
-                    )}
-                    {project.status && (
-                      <div>
-                        <p className="text-xs text-slate-500 uppercase tracking-wide">
-                          Status
-                        </p>
-                        <p className="text-sm font-semibold text-lime-400 mt-1">
-                          {project.status}
-                        </p>
-                      </div>
-                    )}
-                    {(project.area || project.totalApts) && (
-                      <div>
-                        <p className="text-xs text-slate-500 uppercase tracking-wide">
-                          Total Area / Plots
-                        </p>
-                        <p className="text-sm font-semibold text-white mt-1">
-                          {project.area || project.totalApts}
-                        </p>
-                      </div>
-                    )}
-                    {project.launchTimeline && (
-                      <div>
-                        <p className="text-xs text-slate-500 uppercase tracking-wide">
-                          Launch Timeline
-                        </p>
-                        <p className="text-sm font-semibold text-white mt-1">
-                          {project.launchTimeline}
-                        </p>
-                      </div>
-                    )}
-                    {project.author && (
-                      <div>
-                        <p className="text-xs text-slate-500 uppercase tracking-wide">
-                          Availability
-                        </p>
-                        <p className="text-sm font-semibold text-lime-400 mt-1">
-                          Direct from {project.author}
-                        </p>
-                      </div>
-                    )}
+                    <div>
+                      <p className="text-xs text-slate-500 uppercase tracking-wide">
+                        Possession Start Date
+                      </p>
+                      <p className="text-sm font-semibold text-white mt-1">
+                        {project.possessionDate || "Immediate"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-500 uppercase tracking-wide">
+                        Status
+                      </p>
+                      <p className="text-sm font-semibold text-lime-400 mt-1">
+                        {project.status || "Ready to Move"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-500 uppercase tracking-wide">
+                        Total Area / Plots
+                      </p>
+                      <p className="text-sm font-semibold text-white mt-1">
+                        {project.area || project.totalApts || "Area on request"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-500 uppercase tracking-wide">
+                        Launch Timeline
+                      </p>
+                      <p className="text-sm font-semibold text-white mt-1">
+                        {project.launchTimeline || "N/A"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-500 uppercase tracking-wide">
+                        Availability
+                      </p>
+                      <p className="text-sm font-semibold text-lime-400 mt-1">
+                        {project.author ? `Direct from ${project.author}` : "Direct from Developer"}
+                      </p>
+                    </div>
                   </div>
 
                   {project.reraId && (
@@ -1127,46 +1117,41 @@ export default function PropertyDetailPage() {
                     </div>
                   )}
 
-                  {/* Salient Features (only for non-plots) */}
-                  {project.type !== "small_plot" &&
-                    project.type !== "large_plot" && (
-                      <div className="mb-5">
-                        <h3 className="text-lg font-bold text-white mb-3">
-                          Salient Features
-                        </h3>
-                        <ul className="space-y-2">
-                          {[
-                            "Thoroughly verified clear title deeds and clean ownership history.",
-                            "Surrounded by spectacular scenic landscape views.",
-                            "Equipped with comprehensive developer legal registry backing.",
-                            "Highly premium layout spacing ensuring top-tier infrastructure and privacy.",
-                          ].map((f) => (
-                            <li
-                              key={f}
-                              className="flex items-start gap-2 text-sm text-slate-300"
-                            >
-                              <Check
-                                size={15}
-                                className="text-lime-400 shrink-0 mt-0.5"
-                              />
-                              {f}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+                  {/* Salient Features */}
+                  <div className="mb-5">
+                    <h3 className="text-lg font-bold text-white mb-3">
+                      Salient Features
+                    </h3>
+                    <ul className="space-y-2">
+                      {[
+                        "Thoroughly verified clear title deeds and clean ownership history.",
+                        "Surrounded by spectacular scenic landscape views.",
+                        "Equipped with comprehensive developer legal registry backing.",
+                        "Highly premium layout spacing ensuring top-tier infrastructure and privacy.",
+                      ].map((f) => (
+                        <li
+                          key={f}
+                          className="flex items-start gap-2 text-sm text-slate-300"
+                        >
+                          <Check
+                            size={15}
+                            className="text-lime-400 shrink-0 mt-0.5"
+                          />
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
 
                   {/* Description */}
-                  {project.description && (
-                    <div>
-                      <h3 className="text-lg font-bold text-white mb-2">
-                        More about {project.title}
-                      </h3>
-                      <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-line">
-                        {project.description}
-                      </p>
-                    </div>
-                  )}
+                  <div>
+                    <h3 className="text-lg font-bold text-white mb-2">
+                      More about {project.title}
+                    </h3>
+                    <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-line">
+                      {project.description || "No description provided for this dynamic listing."}
+                    </p>
+                  </div>
                 </section>
               )}
 
