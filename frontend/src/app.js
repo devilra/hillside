@@ -12,12 +12,12 @@ const getLiveURL = () => {
   if (typeof window !== "undefined") {
     // If we're on a custom live domain, use the current origin with the path
     if (window.location.hostname.includes("amigowebster.in")) {
-      return "https://amigowebster.in/hillsite-api";
+      return "https://amigowebster.in/hillsite";
     }
     // Dynamic fallback for custom domains
-    return window.location.origin + "/hillsite-api";
+    return window.location.origin + "/hillsite";
   }
-  return "https://amigowebster.in/hillsite-api";
+  return "https://amigowebster.in/hillsite";
 };
 
 export const API_URL = isLocal ? "http://localhost:5000" : getLiveURL();
