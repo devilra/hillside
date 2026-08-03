@@ -49,6 +49,9 @@ const AMENITIES_LIST = [
   "Rain Water Harvesting",
   "Intercom",
   "24 X 7 Security",
+  "Water Source",
+  "Fencing",
+  "EB Connectivity",
 ];
 
 const getGalleryImagesArray = (galleryImages) => {
@@ -240,7 +243,7 @@ export default function Dashboard() {
       location: editingProject.location || "",
       routeSubpath: editingProject.routeSubpath || "",
       priceToken: editingProject.priceToken || "",
-      status: editingProject.status || "Ready to Move",
+      status: editingProject.status || "Ready to Buy",
       possessionDate: editingProject.possessionDate || "",
       totalApts: editingProject.totalApts || "",
       launchTimeline: editingProject.launchTimeline || "",
@@ -769,7 +772,7 @@ export default function Dashboard() {
                 location: "",
                 routeSubpath: "",
                 priceToken: "",
-                status: "Ready to Move",
+                status: "Ready to Buy",
                 possessionDate: "",
                 totalApts: "",
                 launchTimeline: "",
@@ -1054,7 +1057,7 @@ export default function Dashboard() {
                     className="w-full bg-[#060c0a] border border-[#1b3d33] text-white rounded-xl px-3 py-2.5 text-xs focus:border-[#7fff00]/60 outline-none transition-colors appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%237fff00%22%20stroke-width%3D%222%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[length:0.9rem_0.9rem] bg-[right_1rem_center] bg-no-repeat"
                   >
                     <option value="Ready to Move" className="bg-[#0a1411]">
-                      Ready to Move
+                      Ready to Buy
                     </option>
                     <option value="Under Construction" className="bg-[#0a1411]">
                       Under Construction

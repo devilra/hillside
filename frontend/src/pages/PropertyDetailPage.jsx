@@ -24,6 +24,8 @@ import {
   LayoutDashboard,
   Flag,
   Check,
+  Zap,
+  Fence,
 } from "lucide-react";
 import ContactForm from "../forms/Contactform";
 
@@ -39,6 +41,10 @@ const AMENITY_ICONS = {
   "Rain Water Harvesting": Droplets,
   Intercom: Phone,
   "24 X 7 Security": ShieldCheck,
+  // Land Amenities
+  "Water Source": Droplets,
+  Fencing: Fence,
+  "EB Connectivity": Zap,
 };
 
 // ── Seeded Fallbacks if Database Project is Not Found ──────────────────────────
@@ -574,13 +580,22 @@ export default function PropertyDetailPage() {
     return imagePath;
   };
 
-  // Setup Gallery Images
-  const imageMedia = galleryImagesParsed.map((src, idx) => ({
-    id: `image-${idx}`,
-    type: "image",
-    src: getImageUrl(src),
-    alt: `Property Image ${idx + 1}`,
-  }));
+  const getFilename = (urlOrPath) => {
+    if (!urlOrPath) return "";
+    return urlOrPath.split("/").pop().toLowerCase();
+  };
+
+  const mainImageFilename = getFilename(project?.mainImage);
+
+  // Setup Gallery Images (excluding the main image if it's already there)
+  const imageMedia = galleryImagesParsed
+    .filter((src) => getFilename(src) !== mainImageFilename)
+    .map((src, idx) => ({
+      id: `image-${idx}`,
+      type: "image",
+      src: getImageUrl(src),
+      alt: `Property Image ${idx + 1}`,
+    }));
 
   const videoMedia = videosParsed.map((src, idx) => ({
     id: `video-${idx}`,
@@ -728,6 +743,11 @@ export default function PropertyDetailPage() {
     };
 
     getProjectDetail();
+  }, [slug, location.pathname]);
+
+  // Reset carousel index when the loaded property changes
+  useEffect(() => {
+    setCarouselIndex(0);
   }, [slug, location.pathname]);
 
   // Auto-advance carousel
@@ -931,7 +951,7 @@ export default function PropertyDetailPage() {
 
               <div className="flex items-center gap-1 mt-1 text-sm text-slate-400">
                 <MapPin size={14} className="text-lime-400" />
-                <span>{project.location}</span>
+                <span>{project.location}, Yelagiri</span>
               </div>
 
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-5 border-t border-white/10 pt-4">
@@ -1060,27 +1080,27 @@ export default function PropertyDetailPage() {
                   id="overview"
                   className="bg-[#0d1a12] border border-white/10 rounded-xl p-6 scroll-mt-24"
                 >
-                  <h2 className="text-xl font-bold text-white mb-5">
+                  {/* <h2 className="text-xl font-bold text-white mb-5">
                     Overview
-                  </h2>
+                  </h2> */}
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-5 gap-x-4 mb-5">
                     <div>
                       <p className="text-xs text-slate-500 uppercase tracking-wide">
-                        Possession Start Date
+                        Posted Date
                       </p>
                       <p className="text-sm font-semibold text-white mt-1">
                         {project.possessionDate || "Immediate"}
                       </p>
                     </div>
-                    <div>
+                    {/* <div>
                       <p className="text-xs text-slate-500 uppercase tracking-wide">
                         Status
                       </p>
                       <p className="text-sm font-semibold text-lime-400 mt-1">
                         {project.status || "Ready to Move"}
                       </p>
-                    </div>
+                    </div> */}
                     <div>
                       <p className="text-xs text-slate-500 uppercase tracking-wide">
                         Total Area / Plots
@@ -1121,7 +1141,7 @@ export default function PropertyDetailPage() {
                   )}
 
                   {/* Salient Features */}
-                  <div className="mb-5">
+                  {/* <div className="mb-5">
                     <h3 className="text-lg font-bold text-white mb-3">
                       Salient Features
                     </h3>
@@ -1144,7 +1164,7 @@ export default function PropertyDetailPage() {
                         </li>
                       ))}
                     </ul>
-                  </div>
+                  </div> */}
 
                   {/* Description */}
                   <div>
@@ -1153,7 +1173,7 @@ export default function PropertyDetailPage() {
                     </h3>
                     <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-line">
                       {project.description ||
-                        "No description provided for this dynamic listing."}
+                        "No description provided for this  listing."}
                     </p>
                   </div>
                 </section>
@@ -1171,9 +1191,9 @@ export default function PropertyDetailPage() {
                     id="highlights"
                     className="bg-[#0d1a12] border border-white/10 rounded-xl p-6 scroll-mt-24"
                   >
-                    <h2 className="text-xl font-bold text-white mb-5">
+                    {/* <h2 className="text-xl font-bold text-white mb-5">
                       Property Highlights
-                    </h2>
+                    </h2> */}
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6">
                       {project.ownerName && (

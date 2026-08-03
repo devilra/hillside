@@ -24,6 +24,8 @@ import {
   LayoutDashboard,
   Flag,
   Check,
+  Zap,
+  Fence,
 } from "lucide-react";
 import ContactForm from "../forms/Contactform";
 
@@ -39,6 +41,10 @@ const AMENITY_ICONS = {
   "Rain Water Harvesting": Droplets,
   Intercom: Phone,
   "24 X 7 Security": ShieldCheck,
+  // Land Amenities
+  "Water Source": Droplets,
+  Fencing: Fence,
+  "EB Connectivity": Zap,
 };
 
 // ── Seeded Fallbacks if Database Project is Not Found ──────────────────────────
@@ -574,13 +580,22 @@ export default function PropertyDetailPage() {
     return imagePath;
   };
 
-  // Setup Gallery Images
-  const imageMedia = galleryImagesParsed.map((src, idx) => ({
-    id: `image-${idx}`,
-    type: "image",
-    src: getImageUrl(src),
-    alt: `Property Image ${idx + 1}`,
-  }));
+  const getFilename = (urlOrPath) => {
+    if (!urlOrPath) return "";
+    return urlOrPath.split("/").pop().toLowerCase();
+  };
+
+  const mainImageFilename = getFilename(project?.mainImage);
+
+  // Setup Gallery Images (excluding the main image if it's already there)
+  const imageMedia = galleryImagesParsed
+    .filter((src) => getFilename(src) !== mainImageFilename)
+    .map((src, idx) => ({
+      id: `image-${idx}`,
+      type: "image",
+      src: getImageUrl(src),
+      alt: `Property Image ${idx + 1}`,
+    }));
 
   const videoMedia = videosParsed.map((src, idx) => ({
     id: `video-${idx}`,
@@ -730,6 +745,10 @@ export default function PropertyDetailPage() {
     getProjectDetail();
   }, [slug, location.pathname]);
 
+  // Reset carousel index when the loaded property changes
+  useEffect(() => {
+    setCarouselIndex(0);
+  }, [slug, location.pathname]);
 
   // Auto-advance carousel
   useEffect(() => {
@@ -932,7 +951,7 @@ export default function PropertyDetailPage() {
 
               <div className="flex items-center gap-1 mt-1 text-sm text-slate-400">
                 <MapPin size={14} className="text-lime-400" />
-                <span>{project.location}</span>
+                <span>{project.location}, Yelagiri</span>
               </div>
 
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-5 border-t border-white/10 pt-4">
@@ -1004,19 +1023,19 @@ export default function PropertyDetailPage() {
               <p className="text-xl font-bold text-lime-400">
                 {project.priceToken || project.fmv || "Price on Request"}
               </p>
-              {(project.priceToken || project.fmv) && (
+              {/* {(project.priceToken || project.fmv) && (
                 <div className="flex items-center justify-end gap-2 mt-1">
                   <span className="text-xs text-slate-400">Builder Price</span>
                   <span className="text-xs text-lime-400 hover:underline cursor-pointer">
                     See inclusions
                   </span>
                 </div>
-              )}
-              {project.priceToken && (
+              )} */}
+              {/* {project.priceToken && (
                 <p className="text-xs text-slate-500 mt-0.5">
                   Home Loan EMI starts at ₹ 45,000
                 </p>
-              )}
+              )} */}
             </div>
           </div>
         </div>
@@ -1061,25 +1080,27 @@ export default function PropertyDetailPage() {
                   id="overview"
                   className="bg-[#0d1a12] border border-white/10 rounded-xl p-6 scroll-mt-24"
                 >
-                  <h2 className="text-xl font-bold text-white mb-5">Overview</h2>
+                  {/* <h2 className="text-xl font-bold text-white mb-5">
+                    Overview
+                  </h2> */}
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-5 gap-x-4 mb-5">
                     <div>
                       <p className="text-xs text-slate-500 uppercase tracking-wide">
-                        Possession Start Date
+                        Posted Date
                       </p>
                       <p className="text-sm font-semibold text-white mt-1">
                         {project.possessionDate || "Immediate"}
                       </p>
                     </div>
-                    <div>
+                    {/* <div>
                       <p className="text-xs text-slate-500 uppercase tracking-wide">
                         Status
                       </p>
                       <p className="text-sm font-semibold text-lime-400 mt-1">
                         {project.status || "Ready to Move"}
                       </p>
-                    </div>
+                    </div> */}
                     <div>
                       <p className="text-xs text-slate-500 uppercase tracking-wide">
                         Total Area / Plots
@@ -1101,7 +1122,9 @@ export default function PropertyDetailPage() {
                         Availability
                       </p>
                       <p className="text-sm font-semibold text-lime-400 mt-1">
-                        {project.author ? `Direct from ${project.author}` : "Direct from Developer"}
+                        {project.author
+                          ? `Direct from ${project.author}`
+                          : "Direct from Developer"}
                       </p>
                     </div>
                   </div>
@@ -1118,7 +1141,7 @@ export default function PropertyDetailPage() {
                   )}
 
                   {/* Salient Features */}
-                  <div className="mb-5">
+                  {/* <div className="mb-5">
                     <h3 className="text-lg font-bold text-white mb-3">
                       Salient Features
                     </h3>
@@ -1141,7 +1164,7 @@ export default function PropertyDetailPage() {
                         </li>
                       ))}
                     </ul>
-                  </div>
+                  </div> */}
 
                   {/* Description */}
                   <div>
@@ -1149,192 +1172,195 @@ export default function PropertyDetailPage() {
                       More about {project.title}
                     </h3>
                     <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-line">
-                      {project.description || "No description provided for this dynamic listing."}
+                      {project.description ||
+                        "No description provided for this  listing."}
                     </p>
                   </div>
                 </section>
               )}
 
               {/* Highlights Section */}
-              {activeTab === "highlights" && (project.ownerName ||
-                project.waterSource ||
-                project.fencingType ||
-                project.nearestRoad ||
-                project.ebConnectivity ||
-                project.legalVerification) && (
-                <section
-                  id="highlights"
-                  className="bg-[#0d1a12] border border-white/10 rounded-xl p-6 scroll-mt-24"
-                >
-                  <h2 className="text-xl font-bold text-white mb-5">
-                    Property Highlights
-                  </h2>
+              {activeTab === "highlights" &&
+                (project.ownerName ||
+                  project.waterSource ||
+                  project.fencingType ||
+                  project.nearestRoad ||
+                  project.ebConnectivity ||
+                  project.legalVerification) && (
+                  <section
+                    id="highlights"
+                    className="bg-[#0d1a12] border border-white/10 rounded-xl p-6 scroll-mt-24"
+                  >
+                    {/* <h2 className="text-xl font-bold text-white mb-5">
+                      Property Highlights
+                    </h2> */}
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6">
-                    {project.ownerName && (
-                      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">
-                          Owner Name
-                        </span>
-                        <span className="text-white text-sm font-semibold">
-                          {project.ownerName}
-                        </span>
-                      </div>
-                    )}
-                    {(project.area || project.totalApts) && (
-                      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">
-                          Total Area
-                        </span>
-                        <span className="text-white text-sm font-semibold">
-                          {project.area || project.totalApts}
-                        </span>
-                      </div>
-                    )}
-                    {project.waterSource && (
-                      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">
-                          Water Source
-                        </span>
-                        <span className="text-white text-sm font-semibold">
-                          {project.waterSource}
-                        </span>
-                      </div>
-                    )}
-                    {project.fencingType && (
-                      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">
-                          Fencing Type
-                        </span>
-                        <span className="text-white text-sm font-semibold">
-                          {project.fencingType}
-                        </span>
-                      </div>
-                    )}
-                    {project.landSketch && (
-                      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">
-                          Land Sketch / Survey Info
-                        </span>
-                        <span className="text-white text-sm font-semibold">
-                          {project.landSketch}
-                        </span>
-                      </div>
-                    )}
-                    {project.fmv && (
-                      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">
-                          Fair Market Value (FMV)
-                        </span>
-                        <span className="text-white text-sm font-semibold">
-                          {project.fmv}
-                        </span>
-                      </div>
-                    )}
-                    {project.nearestRoad && (
-                      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">
-                          Nearest Road
-                        </span>
-                        <span className="text-white text-sm font-semibold">
-                          {project.nearestRoad}
-                        </span>
-                      </div>
-                    )}
-                    {project.distanceToMainRoad && (
-                      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">
-                          Distance to Main Road
-                        </span>
-                        <span className="text-white text-sm font-semibold">
-                          {project.distanceToMainRoad}
-                        </span>
-                      </div>
-                    )}
-                    {project.connectionRoadWidth && (
-                      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">
-                          Connection Road Width
-                        </span>
-                        <span className="text-white text-sm font-semibold">
-                          {project.connectionRoadWidth}
-                        </span>
-                      </div>
-                    )}
-                    {project.roadType && (
-                      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">
-                          Road Type
-                        </span>
-                        <span className="text-white text-sm font-semibold">
-                          {project.roadType}
-                        </span>
-                      </div>
-                    )}
-                    {project.ebConnectivity && (
-                      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">
-                          EB Connectivity
-                        </span>
-                        <span className="text-white text-sm font-semibold">
-                          {project.ebConnectivity}
-                        </span>
-                      </div>
-                    )}
-                    {project.legalVerification && (
-                      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-slate-400 text-sm">
-                          Legal Verification
-                        </span>
-                        <span
-                          className={`text-sm font-semibold ${
-                            project.legalVerification.toLowerCase() ===
-                              "verified" ||
-                            project.legalVerification.toLowerCase() ===
-                              "completed"
-                              ? "text-emerald-400"
-                              : project.legalVerification.toLowerCase() ===
-                                  "pending"
-                                ? "text-amber-400"
-                                : "text-white"
-                          }`}
-                        >
-                          {project.legalVerification}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {project.view360 && (
-                    <div className="mt-6 border-t border-white/10 pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <div>
-                        <h4 className="text-sm font-semibold text-white">
-                          360° Virtual Tour
-                        </h4>
-                        <p className="text-xs text-slate-400 mt-0.5">
-                          Explore the property in an immersive 360-degree
-                          environment.
-                        </p>
-                      </div>
-                      <a
-                        href={
-                          project.view360.startsWith("http")
-                            ? project.view360
-                            : `https://${project.view360}`
-                        }
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center bg-lime-400 text-[#0b1710] font-semibold text-sm px-5 py-2.5 rounded-xl hover:bg-lime-300 transition-all duration-200"
-                      >
-                        Launch 360° Tour
-                      </a>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6">
+                      {project.ownerName && (
+                        <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                          <span className="text-slate-400 text-sm">
+                            Owner Name
+                          </span>
+                          <span className="text-white text-sm font-semibold">
+                            {project.ownerName}
+                          </span>
+                        </div>
+                      )}
+                      {(project.area || project.totalApts) && (
+                        <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                          <span className="text-slate-400 text-sm">
+                            Total Area
+                          </span>
+                          <span className="text-white text-sm font-semibold">
+                            {project.area || project.totalApts}
+                          </span>
+                        </div>
+                      )}
+                      {project.waterSource && (
+                        <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                          <span className="text-slate-400 text-sm">
+                            Water Source
+                          </span>
+                          <span className="text-white text-sm font-semibold">
+                            {project.waterSource}
+                          </span>
+                        </div>
+                      )}
+                      {project.fencingType && (
+                        <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                          <span className="text-slate-400 text-sm">
+                            Fencing Type
+                          </span>
+                          <span className="text-white text-sm font-semibold">
+                            {project.fencingType}
+                          </span>
+                        </div>
+                      )}
+                      {project.landSketch && (
+                        <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                          <span className="text-slate-400 text-sm">
+                            Land Sketch / Survey Info
+                          </span>
+                          <span className="text-white text-sm font-semibold">
+                            {project.landSketch}
+                          </span>
+                        </div>
+                      )}
+                      {project.fmv && (
+                        <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                          <span className="text-slate-400 text-sm">
+                            Fair Market Value (FMV)
+                          </span>
+                          <span className="text-white text-sm font-semibold">
+                            {project.fmv}
+                          </span>
+                        </div>
+                      )}
+                      {project.nearestRoad && (
+                        <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                          <span className="text-slate-400 text-sm">
+                            Nearest Road
+                          </span>
+                          <span className="text-white text-sm font-semibold">
+                            {project.nearestRoad}
+                          </span>
+                        </div>
+                      )}
+                      {project.distanceToMainRoad && (
+                        <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                          <span className="text-slate-400 text-sm">
+                            Distance to Main Road
+                          </span>
+                          <span className="text-white text-sm font-semibold">
+                            {project.distanceToMainRoad}
+                          </span>
+                        </div>
+                      )}
+                      {project.connectionRoadWidth && (
+                        <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                          <span className="text-slate-400 text-sm">
+                            Connection Road Width
+                          </span>
+                          <span className="text-white text-sm font-semibold">
+                            {project.connectionRoadWidth}
+                          </span>
+                        </div>
+                      )}
+                      {project.roadType && (
+                        <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                          <span className="text-slate-400 text-sm">
+                            Road Type
+                          </span>
+                          <span className="text-white text-sm font-semibold">
+                            {project.roadType}
+                          </span>
+                        </div>
+                      )}
+                      {project.ebConnectivity && (
+                        <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                          <span className="text-slate-400 text-sm">
+                            EB Connectivity
+                          </span>
+                          <span className="text-white text-sm font-semibold">
+                            {project.ebConnectivity}
+                          </span>
+                        </div>
+                      )}
+                      {project.legalVerification && (
+                        <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                          <span className="text-slate-400 text-sm">
+                            Legal Verification
+                          </span>
+                          <span
+                            className={`text-sm font-semibold ${
+                              project.legalVerification.toLowerCase() ===
+                                "verified" ||
+                              project.legalVerification.toLowerCase() ===
+                                "completed"
+                                ? "text-emerald-400"
+                                : project.legalVerification.toLowerCase() ===
+                                    "pending"
+                                  ? "text-amber-400"
+                                  : "text-white"
+                            }`}
+                          >
+                            {project.legalVerification}
+                          </span>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </section>
-              )}
+
+                    {project.view360 && (
+                      <div className="mt-6 border-t border-white/10 pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                          <h4 className="text-sm font-semibold text-white">
+                            360° Virtual Tour
+                          </h4>
+                          <p className="text-xs text-slate-400 mt-0.5">
+                            Explore the property in an immersive 360-degree
+                            environment.
+                          </p>
+                        </div>
+                        <a
+                          href={
+                            project.view360.startsWith("http")
+                              ? project.view360
+                              : `https://${project.view360}`
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center bg-lime-400 text-[#0b1710] font-semibold text-sm px-5 py-2.5 rounded-xl hover:bg-lime-300 transition-all duration-200"
+                        >
+                          Launch 360° Tour
+                        </a>
+                      </div>
+                    )}
+                  </section>
+                )}
 
               {/* Floor Plan Section */}
-              {activeTab === "overview" && project.type !== "small_plot" &&
+              {activeTab === "overview" &&
+                project.type !== "small_plot" &&
                 project.type !== "large_plot" && (
                   <section
                     id="floorplan"
@@ -1498,7 +1524,10 @@ export default function PropertyDetailPage() {
                           ) {
                             setActiveVideo(media);
                           } else {
-                            setLightbox({ images: carouselMedia, startIndex: i });
+                            setLightbox({
+                              images: carouselMedia,
+                              startIndex: i,
+                            });
                           }
                         }}
                       >
