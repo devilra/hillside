@@ -4,27 +4,27 @@ import path from "path";
 import fs from "fs/promises";
 
 // Helper: resolve uploaded file URL
-const handleFileUpload = (file, req) => {
-  if (!file) return null;
+// const handleFileUpload = (file, req) => {
+//   if (!file) return null;
 
-  // Cloudinary
-  if (isCloudinaryConfigured) {
-    return file.path;
-  }
+//   // Cloudinary
+//   if (isCloudinaryConfigured) {
+//     return file.path;
+//   }
 
-  const host = req.get("host");
-  const protocol = req.protocol;
+//   const host = req.get("host");
+//   const protocol = req.protocol;
 
-  let folder = "";
+//   let folder = "";
 
-  if (file.fieldname === "mainImage") {
-    folder = "main";
-  } else if (file.fieldname === "galleryImages") {
-    folder = "gallery";
-  }
+//   if (file.fieldname === "mainImage") {
+//     folder = "main";
+//   } else if (file.fieldname === "galleryImages") {
+//     folder = "gallery";
+//   }
 
-  return `${protocol}://${host}/images/${folder}/${file.filename}`;
-};
+//   return `${protocol}://${host}/images/${folder}/${file.filename}`;
+// };
 
 // ======================================================
 // YOUTUBE HELPERS
@@ -173,7 +173,29 @@ const getBaseUrl = (req) => {
   const protocol = req.protocol;
   const host = req.get("host");
 
-  return `${protocol}://${host}`;
+  // Local
+  if (host.includes("localhost") || host.includes("127.0.0.1")) {
+    return `${protocol}://${host}`;
+  }
+
+  // Production
+  return `${protocol}://${host}/hillsite`;
+};
+
+const handleFileUpload = (file, req) => {
+  if (!file) return null;
+
+  const baseUrl = getBaseUrl(req);
+
+  let folder = "";
+
+  if (file.fieldname === "mainImage") {
+    folder = "main";
+  } else if (file.fieldname === "galleryImages") {
+    folder = "gallery";
+  }
+
+  return `${baseUrl}/images/${folder}/${file.filename}`;
 };
 
 // ======================================================

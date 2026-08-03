@@ -30,30 +30,6 @@ const getImageUrl = (imagePath) => {
   return imagePath;
 };
 
-// ─── Default Fallback Project Data ───────────────────────────────────────────
-const DEFAULT_PROJECTS = [
-  {
-    id: 1,
-    name: "Today Citadel Juinagar",
-    route: "/purva-panorama",
-    location: "Yelagiri Hills",
-    price: "₹ 1.80 Cr Onwards",
-    configuration: "Feb 2025",
-    builtupArea: "10 plots",
-    images: ["/images/Centre-Park.jpg"],
-  },
-  {
-    id: 2,
-    name: "Today Citadel Juinagar",
-    route: "/purva-panorama",
-    location: "Yelagiri Hills",
-    price: "₹ 1.80 Cr Onwards",
-    configuration: "Feb 2025",
-    builtupArea: "10 plots",
-    images: ["/images/Centre-Park.jpg"],
-  },
-];
-
 // ─── Single Project Card (design UNTOUCHED) ─────────────────────────────────
 function ProjectCard({ project }) {
   const [liked, setLiked] = useState(false);
@@ -222,13 +198,13 @@ export default function ExclusiveProjects() {
               builtupArea: p.totalApts || "Area on request",
               images: [p.mainImage],
             }));
-          setProjects(filtered.length > 0 ? filtered : DEFAULT_PROJECTS);
+          setProjects(filtered);
         } else {
-          setProjects(DEFAULT_PROJECTS);
+          setProjects([]);
         }
       } catch (error) {
         console.error("Error fetching exclusive projects:", error);
-        setProjects(DEFAULT_PROJECTS);
+        setProjects([]);
       }
     };
     fetchProjectsList();
@@ -265,8 +241,6 @@ export default function ExclusiveProjects() {
 
     return () => clearInterval(autoplayRef.current);
   }, [isHovering, paginate, projects.length]);
-
-  if (projects.length === 0) return null;
 
   const currentProject = projects[index];
 
@@ -318,7 +292,7 @@ export default function ExclusiveProjects() {
           </div>
         </motion.div>
 
-        {/* Carousel Frame */}
+        {/* Carousel Frame / Empty State */}
         <motion.div
           variants={{
             hidden: { opacity: 0, y: 40 },
@@ -329,50 +303,67 @@ export default function ExclusiveProjects() {
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
         >
-          {/* Slide area */}
-          <div className="relative overflow-hidden w-full">
-            <AnimatePresence
-              mode="popLayout"
-              custom={direction}
-              initial={false}
-            >
-              <motion.div
-                key={currentProject.id}
-                custom={direction}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ duration: 0.5, ease: [0.32, 0.72, 0.35, 1] }}
-                drag={projects.length > 1 ? "x" : false}
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.2}
-                onDragEnd={handleDragEnd}
-                className="w-full select-none"
-              >
-                <ProjectCard project={currentProject} />
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          {/* Prev / Next arrows */}
-          {projects.length > 1 && (
+          {projects.length > 0 ? (
             <>
-              <button
-                onClick={() => paginate(-1)}
-                aria-label="Previous project"
-                className="absolute top-1/2 -translate-y-1/2 left-2 sm:-left-4 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-lime-400/25 flex items-center justify-center text-gray-300 hover:border-lime-400 hover:text-lime-400 transition-colors bg-[#0d1a12]/90 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.4)]"
-              >
-                <ChevronLeft size={18} strokeWidth={2.5} />
-              </button>
-              <button
-                onClick={() => paginate(1)}
-                aria-label="Next project"
-                className="absolute top-1/2 -translate-y-1/2 right-2 sm:-right-4 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-lime-400/25 flex items-center justify-center text-gray-300 hover:border-lime-400 hover:text-lime-400 transition-colors bg-[#0d1a12]/90 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.4)]"
-              >
-                <ChevronRight size={18} strokeWidth={2.5} />
-              </button>
+              {/* Slide area */}
+              <div className="relative overflow-hidden w-full">
+                <AnimatePresence
+                  mode="popLayout"
+                  custom={direction}
+                  initial={false}
+                >
+                  <motion.div
+                    key={currentProject.id}
+                    custom={direction}
+                    variants={slideVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    transition={{ duration: 0.5, ease: [0.32, 0.72, 0.35, 1] }}
+                    drag={projects.length > 1 ? "x" : false}
+                    dragConstraints={{ left: 0, right: 0 }}
+                    dragElastic={0.2}
+                    onDragEnd={handleDragEnd}
+                    className="w-full select-none"
+                  >
+                    <ProjectCard project={currentProject} />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {/* Prev / Next arrows */}
+              {projects.length > 1 && (
+                <>
+                  <button
+                    onClick={() => paginate(-1)}
+                    aria-label="Previous project"
+                    className="absolute top-1/2 -translate-y-1/2 left-2 sm:-left-4 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-lime-400/25 flex items-center justify-center text-gray-300 hover:border-lime-400 hover:text-lime-400 transition-colors bg-[#0d1a12]/90 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.4)]"
+                  >
+                    <ChevronLeft size={18} strokeWidth={2.5} />
+                  </button>
+                  <button
+                    onClick={() => paginate(1)}
+                    aria-label="Next project"
+                    className="absolute top-1/2 -translate-y-1/2 right-2 sm:-right-4 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-lime-400/25 flex items-center justify-center text-gray-300 hover:border-lime-400 hover:text-lime-400 transition-colors bg-[#0d1a12]/90 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.4)]"
+                  >
+                    <ChevronRight size={18} strokeWidth={2.5} />
+                  </button>
+                </>
+              )}
             </>
+          ) : (
+            <div className="w-full min-h-[340px] rounded-3xl border border-dashed border-lime-400/20 bg-[#0d1a12] flex flex-col items-center justify-center text-center px-6">
+              <Building2 className="w-16 h-16 text-lime-400/40 mb-5" />
+
+              <h3 className="text-3xl font-bold text-white">
+                No Exclusive Projects
+              </h3>
+
+              <p className="mt-3 max-w-lg text-gray-400 leading-relaxed">
+                There are currently no exclusive projects available in this
+                category. Please check back later for upcoming premium launches.
+              </p>
+            </div>
           )}
         </motion.div>
 

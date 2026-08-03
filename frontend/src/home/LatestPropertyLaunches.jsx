@@ -293,7 +293,7 @@ export default function LatestPropertyLaunches() {
                 ELITE ESTATES
               </span>
 
-              <span className="block mt-1 text-[22px] sm:text-[20px] md:text-[22px] font-black tracking-tight text-white">
+              <span className="block mt-1 text-[18px] md:text-[17px] font-black tracking-tight text-white">
                 ABOVE 1 ACRES
               </span>
             </h2>

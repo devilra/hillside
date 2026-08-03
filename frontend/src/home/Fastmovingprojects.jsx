@@ -28,46 +28,6 @@ const getImageUrl = (imagePath) => {
   return imagePath;
 };
 
-// ─── Seeded Fallback Feature Data ────────────────────────────────────────────
-const DEFAULT_PROJECTS = [
-  {
-    id: 1,
-    image: "/hillside/Scenic-View.webp",
-    route: "/hubtown-seasons-ecuador",
-    status: "Verified",
-    title: "Handpicked Scenic Plots",
-    location: "Yelagiri Hills",
-    price: "₹ 25 L Onwards",
-    config: "Jan 2026",
-    area: "50 Plots",
-    builder: "Hillsite Developers",
-  },
-  {
-    id: 2,
-    image: "/hillside/Ownership-Documents.webp",
-    route: "/hubtown-seasons-ecuador",
-    status: "Verified",
-    title: "Verified Ownership Documents",
-    location: "Yelagiri Hills",
-    price: "Price on request",
-    config: "Feb 2026",
-    area: "10 Plots",
-    builder: "Hillsite Developers",
-  },
-  {
-    id: 3,
-    image: "/hillside/Direct-Accees-to-Owners.webp",
-    route: "/hubtown-seasons-ecuador",
-    status: "Direct Access",
-    title: "Direct Access to Verified Landowners",
-    location: "Yelagiri Hills",
-    price: "Price on request",
-    config: "Mar 2026",
-    area: "15 Plots",
-    builder: "Hillsite Developers",
-  },
-];
-
 // ─── Property Card (wide, short — landscape layout) ──────────────────────────
 function PropertyCard({ project }) {
   const [liked, setLiked] = useState(false);
@@ -287,7 +247,7 @@ export default function FastMovingProjects() {
                 PREMIUM LANDS
               </span>
 
-              <span className="block mt-1 text-[22px] sm:text-[20px] md:text-[22px] font-black tracking-tight text-white">
+              <span className="block mt-1 text-[18px]  md:text-[17px] font-black tracking-tight text-white">
                 25 CENTS to 1 ACRES
               </span>
             </h2>
@@ -365,21 +325,17 @@ export default function FastMovingProjects() {
                 ))}
               </div>
             ) : (
-              <div className="w-full min-h-[340px] rounded-3xl border border-dashed border-lime-400/20 bg-[#0d1a12] flex flex-col items-center justify-center text-center px-6">
-                <Mountain className="w-16 h-16 text-lime-400/40 mb-5" />
+              <div className="w-full min-h-[320px] rounded-3xl border border-dashed border-lime-400/20 bg-[#0d1a12] flex flex-col items-center justify-center text-center px-6">
+                <Mountain className="w-14 h-14 text-lime-400/40 mb-5" />
 
-                <h3 className="text-3xl font-bold text-white">
+                <h3 className="text-2xl font-bold text-white">
                   No Premium Plot Projects
                 </h3>
 
-                <p className="mt-3 max-w-lg text-gray-400 leading-relaxed">
-                  There are currently no premium plot projects available in this
-                  category. Please check back later for upcoming launches.
+                <p className="mt-3 max-w-md text-gray-400 leading-relaxed">
+                  There are currently no projects available in this category.
+                  Please check back later for upcoming launches.
                 </p>
-
-                {/* <button className="mt-8 px-6 py-3 rounded-full bg-lime-400 text-black font-semibold hover:bg-lime-300 transition-all">
-                  Browse Other Projects
-                </button> */}
               </div>
             )}
           </div>
