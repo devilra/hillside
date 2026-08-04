@@ -68,9 +68,10 @@ const DEFAULT_PROJECTS = [
   },
 ];
 
-// ─── Property Card (wide, short — landscape layout) ──────────────────────────
 function getCalculatedDetails(project) {
-  // 1. Rate per Cent
+  // -------------------------------
+  // Extract Rate Per Cent
+  // -------------------------------
   let ratePerCent = 0;
   let rateStr = "";
 
@@ -80,10 +81,17 @@ function getCalculatedDetails(project) {
     project.fmv,
     project.priceToken,
   ];
-  for (const f of fieldsToCheckRate) {
-    if (f && typeof f === "string" && f.toLowerCase().includes("per cent")) {
-      rateStr = f;
-      const match = f.match(/([0-9.]+)/);
+
+  for (const field of fieldsToCheckRate) {
+    if (
+      field &&
+      typeof field === "string" &&
+      field.toLowerCase().includes("per cent")
+    ) {
+      rateStr = field;
+
+      const match = field.match(/([0-9.]+)/);
+
       if (match) {
         ratePerCent = parseFloat(match[1]);
         break;
@@ -91,7 +99,9 @@ function getCalculatedDetails(project) {
     }
   }
 
-  // 2. Area
+  // -------------------------------
+  // Extract Area
+  // -------------------------------
   let areaValue = 0;
   let areaUnit = "cent";
   let areaStr = "";
@@ -104,32 +114,16 @@ function getCalculatedDetails(project) {
     project.area.toLowerCase() !== "nil"
   ) {
     areaStr = project.area;
-  } else if (
-    project.price &&
-    typeof project.price === "string" &&
-    (project.price.toLowerCase().includes("cent") ||
-      project.price.toLowerCase().includes("acre")) &&
-    !project.price.toLowerCase().includes("per cent")
-  ) {
-    areaStr = project.price;
-  } else if (
-    project.totalApts &&
-    typeof project.totalApts === "string" &&
-    project.totalApts.trim() !== ""
-  ) {
+  } else if (project.totalApts && typeof project.totalApts === "string") {
     areaStr = project.totalApts;
-  } else if (
-    project.config &&
-    typeof project.config === "string" &&
-    project.config.trim() !== ""
-  ) {
-    areaStr = project.config;
   }
 
   if (areaStr) {
-    const numMatch = areaStr.match(/([0-9.]+)/);
-    if (numMatch) {
-      areaValue = parseFloat(numMatch[1]);
+    const match = areaStr.match(/([0-9.]+)/);
+
+    if (match) {
+      areaValue = parseFloat(match[1]);
+
       if (areaStr.toLowerCase().includes("acre")) {
         areaUnit = "acre";
       } else {
@@ -138,76 +132,92 @@ function getCalculatedDetails(project) {
     }
   }
 
-  // Convert area to cents
-  let cents = 0;
-  if (areaUnit === "acre") {
-    cents = areaValue * 100;
-  } else {
-    cents = areaValue;
-  }
+  // -------------------------------
+  // Convert Area
+  // -------------------------------
+  const totalCents = areaUnit === "acre" ? areaValue * 100 : areaValue;
 
-  // Calculate Total Price
-  const totalPriceLakhs = cents * ratePerCent;
+  const totalSqft = totalCents * 435.6;
+
+  // -------------------------------
+  // Rate Per Sq.ft
+  // -------------------------------
+  const ratePerCentRupees = ratePerCent * 100000;
+
+  const ratePerSqft =
+    ratePerCentRupees > 0 ? Math.round(ratePerCentRupees / 435.6) : 0;
+
+  // -------------------------------
+  // Total Price
+  // -------------------------------
+  const totalPriceLakhs = totalCents * ratePerCent;
 
   let formattedTotalPrice = "Price on Request";
+
   if (totalPriceLakhs > 0) {
     if (totalPriceLakhs >= 100) {
       formattedTotalPrice = `₹ ${(totalPriceLakhs / 100).toFixed(2)} Cr`;
     } else {
       formattedTotalPrice = `₹ ${totalPriceLakhs.toFixed(2)} Lakhs`;
     }
-  } else if (
-    project.price &&
-    typeof project.price === "string" &&
-    !project.price.toLowerCase().includes("cent")
-  ) {
-    formattedTotalPrice = project.price;
   }
 
-  // Calculate Infrastructure progress
+  // -------------------------------
+  // Amenities %
+  // -------------------------------
   let amenitiesArray = [];
+
   try {
     amenitiesArray =
       typeof project.amenities === "string"
         ? JSON.parse(project.amenities || "[]")
         : project.amenities || [];
-  } catch (e) {
+  } catch {
     amenitiesArray = [];
   }
 
   const checkAmenities = ["EB Connectivity", "Water Source", "Fencing"];
-  let presentCount = 0;
-  checkAmenities.forEach((am) => {
-    const hasAmenity =
-      amenitiesArray.some((val) =>
-        val.toLowerCase().includes(am.toLowerCase()),
+
+  let available = 0;
+
+  checkAmenities.forEach((item) => {
+    const exists =
+      amenitiesArray.some((x) =>
+        x.toLowerCase().includes(item.toLowerCase()),
       ) ||
-      (project.ebConnectivity &&
-        project.ebConnectivity.toLowerCase() === "available" &&
-        am === "EB Connectivity") ||
-      (project.waterSource &&
-        project.waterSource.toLowerCase() === "available" &&
-        am === "Water Source") ||
-      (project.fencingType &&
-        project.fencingType.toLowerCase() === "available" &&
-        am === "Fencing");
-    if (hasAmenity) {
-      presentCount++;
-    }
+      (item === "EB Connectivity" &&
+        project.ebConnectivity?.toLowerCase() === "available") ||
+      (item === "Water Source" &&
+        project.waterSource?.toLowerCase() === "available") ||
+      (item === "Fencing" &&
+        project.fencingType?.toLowerCase() === "available");
+
+    if (exists) available++;
   });
 
   const infrastructurePercent = Math.round(
-    (presentCount / checkAmenities.length) * 100,
+    (available / checkAmenities.length) * 100,
   );
 
+  // -------------------------------
+  // Return
+  // -------------------------------
   return {
-    ratePerCent: rateStr || (ratePerCent ? `${ratePerCent}L per cent` : "N/A"),
+    ratePerCent: ratePerCent > 0 ? `${ratePerCent}L per cent` : "N/A",
+
+    ratePerSqft: ratePerSqft > 0 ? `₹ ${ratePerSqft}/Sq.ft` : "N/A",
+
     totalArea:
       areaStr ||
       (areaValue
         ? `${areaValue} ${areaUnit === "acre" ? "Acres" : "Cents"}`
         : "N/A"),
+
+    totalSqft:
+      totalSqft > 0 ? `${Math.round(totalSqft).toLocaleString()} Sq.ft` : "N/A",
+
     totalPrice: formattedTotalPrice,
+
     percent: infrastructurePercent,
   };
 }
@@ -264,7 +274,7 @@ function PropertyCard({ project }) {
               {project.title}
             </h3>
 
-            <div className="flex items-center justify-between gap-2 text-[12px]">
+            {/* <div className="flex items-center justify-between gap-2 text-[12px]">
               <span className="flex items-center gap-1 text-gray-400 min-w-0">
                 <MapPin size={11} className="text-lime-400 shrink-0" />
                 <span className="truncate">{project.location}, Yelagiri</span>
@@ -274,26 +284,27 @@ function PropertyCard({ project }) {
                   ? details.ratePerCent
                   : project.price}
               </span>
-            </div>
+            </div> */}
 
             {/* Additional Details for Small Plots */}
             <div className="flex flex-col gap-1.5 mt-2 pt-2 border-t border-white/5 text-[11px]">
               <div className="flex justify-between items-center text-slate-450">
                 <span className="text-gray-400">Total Area:</span>
-                <span className="text-white font-medium">
-                  {details.totalArea}
-                </span>
-              </div>
-              <div className="flex justify-between items-center text-slate-450">
-                <span className="text-gray-400">Rate per Cent:</span>
-                <span className="text-[#a3e635] font-semibold">
-                  {details.ratePerCent}
-                </span>
+
+                <span className="text-white">{details.totalSqft}</span>
               </div>
               <div className="flex justify-between items-center text-slate-450">
                 <span className="text-gray-400">Total Value:</span>
-                <span className="text-[#a3e635] font-extrabold">
+
+                <span className="text-[#a3e635] font-bold">
                   {details.totalPrice}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-slate-450">
+                <span className="text-gray-400">Rate / Sq.ft:</span>
+
+                <span className="text-[#a3e635] font-semibold">
+                  {details.ratePerSqft}
                 </span>
               </div>
               {/* <div className="flex items-center justify-between text-slate-455 mt-0.5">

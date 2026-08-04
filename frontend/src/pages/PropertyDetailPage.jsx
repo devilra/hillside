@@ -498,12 +498,11 @@ function Lightbox({ images, startIndex, onClose }) {
 function getCalculatedDetails(project) {
   if (!project) {
     return {
-      ratePerCent: null,
+      ratePerCent: "N/A",
+      ratePerSqft: "N/A",
       totalArea: "N/A",
-      totalCent: 0,
-      totalAcre: 0,
+      totalSqft: 0,
       totalPrice: "Price on Request",
-      pricePerAcre: "N/A",
       infrastructure: 0,
     };
   }
@@ -514,13 +513,16 @@ function getCalculatedDetails(project) {
     return match ? Number(match[0]) : 0;
   };
 
-  // ---------------- Rate ----------------
+  // ---------------- Rate Per Cent ----------------
 
-  const rateSource = [project.priceToken, project.status, project.fmv].find(
-    (v) => typeof v === "string" && v.toLowerCase().includes("per cent"),
-  );
+  const rateSource = [
+    project.priceToken,
+    project.status,
+    project.fmv,
+    project.price,
+  ].find((v) => typeof v === "string" && v.toLowerCase().includes("per cent"));
 
-  const rate = extractNumber(rateSource);
+  const ratePerCent = extractNumber(rateSource);
 
   // ---------------- Area ----------------
 
@@ -533,11 +535,16 @@ function getCalculatedDetails(project) {
 
   const totalCent = isAcre ? area * 100 : area;
 
-  const totalAcre = totalCent / 100;
+  const totalSqft = Math.round(totalCent * 435.6);
 
-  // ---------------- Price ----------------
+  // ---------------- Rate / Sq.ft ----------------
 
-  const totalLakhs = totalCent * rate;
+  const ratePerSqft =
+    ratePerCent > 0 ? Math.round((ratePerCent * 100000) / 435.6) : 0;
+
+  // ---------------- Total Price ----------------
+
+  const totalLakhs = totalCent * ratePerCent;
 
   let totalPrice = "Price on Request";
 
@@ -548,19 +555,7 @@ function getCalculatedDetails(project) {
         : `₹ ${totalLakhs.toFixed(2)} Lakhs`;
   }
 
-  const pricePerAcre = rate > 0 ? `₹ ${(rate * 100).toFixed(2)} Lakhs` : "N/A";
-
   // ---------------- Infrastructure ----------------
-
-  const amenities = Array.isArray(project.amenities)
-    ? project.amenities
-    : (() => {
-        try {
-          return JSON.parse(project.amenities || "[]");
-        } catch {
-          return [];
-        }
-      })();
 
   const checks = [
     project.ebConnectivity === "Available",
@@ -573,22 +568,20 @@ function getCalculatedDetails(project) {
   );
 
   return {
-    ratePerCent: rate > 0 ? `₹${rate.toFixed(2)}L per cent` : "N/A",
+    ratePerCent: ratePerCent > 0 ? `${ratePerCent.toFixed(2)} L / Cent` : "N/A",
 
-    totalArea:
-      totalCent > 0
-        ? isAcre
-          ? `${totalAcre.toFixed(2)} Acres`
-          : `${totalCent} Cents`
-        : "N/A",
+    ratePerSqft:
+      ratePerSqft > 0 ? `₹ ${ratePerSqft.toLocaleString()} / Sq.ft` : "N/A",
+
+    totalArea: totalSqft > 0 ? `${totalSqft.toLocaleString()} Sq.ft` : "N/A",
+
+    totalSqft,
 
     totalCent,
 
-    totalAcre: totalAcre.toFixed(2),
+    totalAcre: (totalCent / 100).toFixed(2),
 
     totalPrice,
-
-    pricePerAcre,
 
     infrastructure,
   };
@@ -617,6 +610,7 @@ export default function PropertyDetailPage() {
   const [loanAmount, setLoanAmount] = useState(5000000);
   const [tenure, setTenure] = useState(15);
   const [interestRate, setInterestRate] = useState(8.5);
+  const [showAreaDetails, setShowAreaDetails] = useState(false);
 
   // Parse details
   let amenitiesList = [];
@@ -1132,7 +1126,7 @@ export default function PropertyDetailPage() {
               </p>
 
               <p className="text-sm text-slate-400 mt-1">
-                {details.ratePerCent}
+                {details.ratePerSqft}
               </p>
 
               <div className="mt-4 ">
@@ -1164,7 +1158,116 @@ export default function PropertyDetailPage() {
                   </p>
                 </div> */}
               </div>
+              <button
+                onClick={() => setShowAreaDetails(true)}
+                className="mt-3 inline-flex items-center justify-center px-3 py-1.5 rounded-md bg-lime-400 text-[#0b1710] text-xs font-semibold hover:bg-lime-300 transition-all duration-200"
+              >
+                View Details
+              </button>
             </div>
+            {showAreaDetails && (
+              <div
+                className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+                onClick={() => setShowAreaDetails(false)}
+              >
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-full max-w-sm rounded-xl bg-[#0d1a12] border border-white/10 shadow-2xl overflow-hidden"
+                >
+                  {/* Header */}
+                  <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+                    <div>
+                      <h3 className="text-base font-semibold text-white">
+                        Area Details
+                      </h3>
+
+                      <p className="text-[11px] text-slate-500 mt-0.5">
+                        Property Measurements
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() => setShowAreaDetails(false)}
+                      className="text-slate-400 hover:text-white transition"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+
+                  {/* Details */}
+                  <div className="p-5 space-y-3">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-slate-400">Square Feet</span>
+
+                      <span className="text-white font-medium">
+                        {details.totalSqft.toLocaleString()} Sq.ft
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-slate-400">Total Cent</span>
+
+                      <span className="text-white font-medium">
+                        {details.totalCent} Cent
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-slate-400">Total Acre</span>
+
+                      <span className="text-white font-medium">
+                        {details.totalAcre} Acre
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-slate-400">Rate / Sq.ft</span>
+
+                      <span className="text-lime-400 font-semibold">
+                        {details.ratePerSqft}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-slate-400">Rate / Cent</span>
+
+                      <span className="text-lime-400 font-semibold">
+                        {details.ratePerCent}
+                      </span>
+                    </div>
+
+                    <div className="border-t border-white/10 pt-3 flex justify-between items-center">
+                      <span className="text-white text-sm font-medium">
+                        Total Value
+                      </span>
+
+                      <span className="text-lime-400 text-base font-bold">
+                        {details.totalPrice}
+                      </span>
+                    </div>
+
+                    {/* Conversion */}
+                    {/* <div className="rounded-lg bg-lime-400/10 border border-lime-400/20 px-4 py-3">
+                      <p className="text-[11px] font-semibold text-lime-400 mb-2">
+                        Conversion Formula
+                      </p>
+
+                      <div className="space-y-1 text-[11px] text-slate-400">
+                        <p>• 1 Cent = 435.6 Sq.ft</p>
+                        <p>• 100 Cent = 1 Acre</p>
+                      </div>
+                    </div> */}
+
+                    <button
+                      onClick={() => setShowAreaDetails(false)}
+                      className="w-full mt-2 rounded-lg border border-lime-400/30 py-2 text-xs font-semibold text-lime-400 hover:bg-lime-400 hover:text-[#0d1a12] transition"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
