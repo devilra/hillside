@@ -498,153 +498,99 @@ function Lightbox({ images, startIndex, onClose }) {
 function getCalculatedDetails(project) {
   if (!project) {
     return {
-      ratePerCent: "N/A",
+      ratePerCent: null,
       totalArea: "N/A",
+      totalCent: 0,
+      totalAcre: 0,
       totalPrice: "Price on Request",
-      percent: 0,
+      pricePerAcre: "N/A",
+      infrastructure: 0,
     };
   }
 
-  // 1. Rate per Cent
-  let ratePerCent = 0;
-  let rateStr = "";
+  const extractNumber = (value) => {
+    if (!value) return 0;
+    const match = String(value).match(/[\d.]+/);
+    return match ? Number(match[0]) : 0;
+  };
 
-  const fieldsToCheckRate = [project.priceToken, project.status, project.fmv];
-  for (const f of fieldsToCheckRate) {
-    if (f && typeof f === "string" && f.toLowerCase().includes("per cent")) {
-      rateStr = f;
-      const match = f.match(/([0-9.]+)/);
-      if (match) {
-        ratePerCent = parseFloat(match[1]);
-        break;
-      }
-    }
+  // ---------------- Rate ----------------
+
+  const rateSource = [project.priceToken, project.status, project.fmv].find(
+    (v) => typeof v === "string" && v.toLowerCase().includes("per cent"),
+  );
+
+  const rate = extractNumber(rateSource);
+
+  // ---------------- Area ----------------
+
+  const areaSource =
+    project.area || project.totalApts || project.launchTimeline || "";
+
+  const area = extractNumber(areaSource);
+
+  const isAcre = areaSource.toLowerCase().includes("acre");
+
+  const totalCent = isAcre ? area * 100 : area;
+
+  const totalAcre = totalCent / 100;
+
+  // ---------------- Price ----------------
+
+  const totalLakhs = totalCent * rate;
+
+  let totalPrice = "Price on Request";
+
+  if (totalLakhs > 0) {
+    totalPrice =
+      totalLakhs >= 100
+        ? `₹ ${(totalLakhs / 100).toFixed(2)} Cr`
+        : `₹ ${totalLakhs.toFixed(2)} Lakhs`;
   }
 
-  // 2. Area
-  let areaValue = 0;
-  let areaUnit = "cent";
-  let areaStr = "";
+  const pricePerAcre = rate > 0 ? `₹ ${(rate * 100).toFixed(2)} Lakhs` : "N/A";
 
-  if (
-    project.area &&
-    typeof project.area === "string" &&
-    project.area.trim() !== "" &&
-    project.area.toLowerCase() !== "test" &&
-    project.area.toLowerCase() !== "nil"
-  ) {
-    areaStr = project.area;
-  } else if (
-    project.priceToken &&
-    typeof project.priceToken === "string" &&
-    (project.priceToken.toLowerCase().includes("cent") ||
-      project.priceToken.toLowerCase().includes("acre")) &&
-    !project.priceToken.toLowerCase().includes("per cent")
-  ) {
-    areaStr = project.priceToken;
-  } else if (
-    project.totalApts &&
-    typeof project.totalApts === "string" &&
-    project.totalApts.trim() !== ""
-  ) {
-    areaStr = project.totalApts;
-  } else if (
-    project.launchTimeline &&
-    typeof project.launchTimeline === "string" &&
-    project.launchTimeline.trim() !== ""
-  ) {
-    areaStr = project.launchTimeline;
-  }
+  // ---------------- Infrastructure ----------------
 
-  if (areaStr) {
-    const numMatch = areaStr.match(/([0-9.]+)/);
-    if (numMatch) {
-      areaValue = parseFloat(numMatch[1]);
-      if (areaStr.toLowerCase().includes("acre")) {
-        areaUnit = "acre";
-      } else {
-        areaUnit = "cent";
-      }
-    }
-  }
+  const amenities = Array.isArray(project.amenities)
+    ? project.amenities
+    : (() => {
+        try {
+          return JSON.parse(project.amenities || "[]");
+        } catch {
+          return [];
+        }
+      })();
 
-  // Convert area to cents
-  let cents = 0;
-  if (areaUnit === "acre") {
-    cents = areaValue * 100;
-  } else {
-    cents = areaValue;
-  }
+  const checks = [
+    project.ebConnectivity === "Available",
+    project.waterSource === "Available",
+    project.fencingType === "Available",
+  ];
 
-  // Calculate Total Price
-  const totalPriceLakhs = cents * ratePerCent;
-
-  let formattedTotalPrice = "Price on Request";
-  if (totalPriceLakhs > 0) {
-    if (totalPriceLakhs >= 100) {
-      formattedTotalPrice = `₹ ${(totalPriceLakhs / 100).toFixed(2)} Cr`;
-    } else {
-      formattedTotalPrice = `₹ ${totalPriceLakhs.toFixed(2)} Lakhs`;
-    }
-  } else if (
-    project.priceToken &&
-    typeof project.priceToken === "string" &&
-    !project.priceToken.toLowerCase().includes("cent")
-  ) {
-    formattedTotalPrice = project.priceToken;
-  } else if (
-    project.fmv &&
-    typeof project.fmv === "string" &&
-    !project.fmv.toLowerCase().includes("cent")
-  ) {
-    formattedTotalPrice = project.fmv;
-  }
-
-  // Calculate Infrastructure progress
-  let amenitiesArray = [];
-  try {
-    amenitiesArray =
-      typeof project.amenities === "string"
-        ? JSON.parse(project.amenities || "[]")
-        : project.amenities || [];
-  } catch (e) {
-    amenitiesArray = [];
-  }
-
-  const checkAmenities = ["EB Connectivity", "Water Source", "Fencing"];
-  let presentCount = 0;
-  checkAmenities.forEach((am) => {
-    const hasAmenity =
-      amenitiesArray.some((val) =>
-        val.toLowerCase().includes(am.toLowerCase()),
-      ) ||
-      (project.ebConnectivity &&
-        project.ebConnectivity.toLowerCase() === "available" &&
-        am === "EB Connectivity") ||
-      (project.waterSource &&
-        project.waterSource.toLowerCase() === "available" &&
-        am === "Water Source") ||
-      (project.fencingType &&
-        project.fencingType.toLowerCase() === "available" &&
-        am === "Fencing");
-    if (hasAmenity) {
-      presentCount++;
-    }
-  });
-
-  const infrastructurePercent = Math.round(
-    (presentCount / checkAmenities.length) * 100,
+  const infrastructure = Math.round(
+    (checks.filter(Boolean).length / checks.length) * 100,
   );
 
   return {
-    ratePerCent: rateStr || (ratePerCent ? `${ratePerCent}L per cent` : "N/A"),
+    ratePerCent: rate > 0 ? `₹${rate.toFixed(2)}L per cent` : "N/A",
+
     totalArea:
-      areaStr ||
-      (areaValue
-        ? `${areaValue} ${areaUnit === "acre" ? "Acres" : "Cents"}`
-        : "N/A"),
-    totalPrice: formattedTotalPrice,
-    percent: infrastructurePercent,
+      totalCent > 0
+        ? isAcre
+          ? `${totalAcre.toFixed(2)} Acres`
+          : `${totalCent} Cents`
+        : "N/A",
+
+    totalCent,
+
+    totalAcre: totalAcre.toFixed(2),
+
+    totalPrice,
+
+    pricePerAcre,
+
+    infrastructure,
   };
 }
 
@@ -1180,28 +1126,44 @@ export default function PropertyDetailPage() {
               </div>
             </div>
 
-            <div className="w-full lg:w-auto text-left lg:text-right shrink-0">
-              <p className="text-xl font-bold text-lime-400">
+            <div className="text-left lg:text-right">
+              <p className="text-3xl font-bold text-lime-400">
                 {details.totalPrice}
               </p>
-              {details.ratePerCent !== "N/A" && (
-                <p className="text-xs text-slate-450 mt-1">
-                  ({details.ratePerCent})
-                </p>
-              )}
-              {/* {(project.priceToken || project.fmv) && (
-                <div className="flex items-center justify-end gap-2 mt-1">
-                  <span className="text-xs text-slate-400">Builder Price</span>
-                  <span className="text-xs text-lime-400 hover:underline cursor-pointer">
-                    See inclusions
-                  </span>
+
+              <p className="text-sm text-slate-400 mt-1">
+                {details.ratePerCent}
+              </p>
+
+              <div className="mt-4 ">
+                <div>
+                  <p className="text-xs text-slate-500">Total Area</p>
+                  <p className="text-white font-semibold">
+                    {details.totalArea}
+                  </p>
                 </div>
-              )} */}
-              {/* {project.priceToken && (
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Home Loan EMI starts at ₹ 45,000
-                </p>
-              )} */}
+
+                {/* <div>
+                  <p className="text-xs text-slate-500">Total Cent</p>
+                  <p className="text-white font-semibold">
+                    {details.totalCent}
+                  </p>
+                </div> */}
+
+                {/* <div>
+                  <p className="text-xs text-slate-500">Total Acre</p>
+                  <p className="text-white font-semibold">
+                    {details.totalAcre}
+                  </p>
+                </div> */}
+
+                {/* <div>
+                  <p className="text-xs text-slate-500">Price / Acre</p>
+                  <p className="text-lime-400 font-semibold">
+                    {details.pricePerAcre}
+                  </p>
+                </div> */}
+              </div>
             </div>
           </div>
         </div>
@@ -1272,7 +1234,11 @@ export default function PropertyDetailPage() {
                         Total Area / Plots
                       </p>
                       <p className="text-sm font-semibold text-white mt-1">
-                        {details.totalArea !== "N/A" ? details.totalArea : (project.area || project.totalApts || "Area on request")}
+                        {details.totalArea !== "N/A"
+                          ? details.totalArea
+                          : project.area ||
+                            project.totalApts ||
+                            "Area on request"}
                       </p>
                     </div>
                     <div>
@@ -1372,13 +1338,17 @@ export default function PropertyDetailPage() {
                           </span>
                         </div>
                       )}
-                      {(project.area || project.totalApts || details.totalArea !== "N/A") && (
+                      {(project.area ||
+                        project.totalApts ||
+                        details.totalArea !== "N/A") && (
                         <div className="flex justify-between items-center border-b border-white/5 pb-2">
                           <span className="text-slate-400 text-sm">
                             Total Area
                           </span>
                           <span className="text-white text-sm font-semibold">
-                            {details.totalArea !== "N/A" ? details.totalArea : (project.area || project.totalApts)}
+                            {details.totalArea !== "N/A"
+                              ? details.totalArea
+                              : project.area || project.totalApts}
                           </span>
                         </div>
                       )}
