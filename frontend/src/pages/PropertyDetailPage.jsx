@@ -997,7 +997,7 @@ export default function PropertyDetailPage() {
                     </p>
                   </div>
                 )}
-                {project.fmv ? (
+                {/* {project.fmv ? (
                   <div>
                     <p className="text-xs text-slate-500 flex items-center gap-1">
                       <span>▤</span> Market Value (FMV)
@@ -1015,7 +1015,7 @@ export default function PropertyDetailPage() {
                       ₹ 8,822 sq.ft
                     </p>
                   </div>
-                ) : null}
+                ) : null} */}
               </div>
             </div>
 
@@ -1216,7 +1216,7 @@ export default function PropertyDetailPage() {
                           </span>
                         </div>
                       )}
-                      {project.waterSource && (
+                      {/* {project.waterSource && (
                         <div className="flex justify-between items-center border-b border-white/5 pb-2">
                           <span className="text-slate-400 text-sm">
                             Water Source
@@ -1225,8 +1225,8 @@ export default function PropertyDetailPage() {
                             {project.waterSource}
                           </span>
                         </div>
-                      )}
-                      {project.fencingType && (
+                      )} */}
+                      {/* {project.fencingType && (
                         <div className="flex justify-between items-center border-b border-white/5 pb-2">
                           <span className="text-slate-400 text-sm">
                             Fencing Type
@@ -1235,7 +1235,7 @@ export default function PropertyDetailPage() {
                             {project.fencingType}
                           </span>
                         </div>
-                      )}
+                      )} */}
                       {project.landSketch && (
                         <div className="flex justify-between items-center border-b border-white/5 pb-2">
                           <span className="text-slate-400 text-sm">
@@ -1296,7 +1296,7 @@ export default function PropertyDetailPage() {
                           </span>
                         </div>
                       )}
-                      {project.ebConnectivity && (
+                      {/* {project.ebConnectivity && (
                         <div className="flex justify-between items-center border-b border-white/5 pb-2">
                           <span className="text-slate-400 text-sm">
                             EB Connectivity
@@ -1305,7 +1305,7 @@ export default function PropertyDetailPage() {
                             {project.ebConnectivity}
                           </span>
                         </div>
-                      )}
+                      )} */}
                       {project.legalVerification && (
                         <div className="flex justify-between items-center border-b border-white/5 pb-2">
                           <span className="text-slate-400 text-sm">
@@ -1487,7 +1487,7 @@ export default function PropertyDetailPage() {
                     {project.title} Gallery
                   </h2>
 
-                  <div className="flex gap-0 border-b border-white/10 mb-5 overflow-x-auto">
+                  {/* <div className="flex gap-0 border-b border-white/10 mb-5 overflow-x-auto">
                     {[
                       "Elevation",
                       "Amenities",
@@ -1510,7 +1510,7 @@ export default function PropertyDetailPage() {
                         )}
                       </button>
                     ))}
-                  </div>
+                  </div> */}
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {carouselMedia.map((media, i) => (
