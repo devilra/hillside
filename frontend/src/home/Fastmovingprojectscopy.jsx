@@ -1,140 +1,123 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import {
+  Heart,
+  MapPin,
+  CalendarDays,
+  LayoutGrid,
+  ChevronLeft,
+  ChevronRight,
+  Mountain,
+} from "lucide-react";
 import BorderGlow from "../components/BorderGlow";
 import API_URL from "../app";
 
-// ─── Seeded Fallback Feature Data ────────────────────────────────────────────
-const DEFAULT_PROJECTS = [
-  {
-    id: 1,
-    image: "/hillside/Scenic-View.webp",
-    route: "/hubtown-seasons-ecuador",
-    status: "Verified",
-    title: "Handpicked Scenic Plots",
-    location: "Yelagiri Hills",
-    price: "₹ 25 L Onwards",
-    config: "Jan 2026",
-    area: "50 Plots",
-    builder: "Hillsite Developers",
-  },
-  {
-    id: 2,
-    image: "/hillside/Ownership-Documents.webp",
-    route: "/hubtown-seasons-ecuador",
-    status: "Verified",
-    title: "Verified Ownership Documents",
-    location: "Yelagiri Hills",
-    price: "Price on request",
-    config: "Feb 2026",
-    area: "10 Plots",
-    builder: "Hillsite Developers",
-  },
-  {
-    id: 3,
-    image: "/hillside/Direct-Accees-to-Owners.webp",
-    route: "/hubtown-seasons-ecuador",
-    status: "Direct Access",
-    title: "Direct Access to Verified Landowners",
-    location: "Yelagiri Hills",
-    price: "Price on request",
-    config: "Mar 2026",
-    area: "15 Plots",
-    builder: "Hillsite Developers",
-  },
-];
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return "";
 
-// ─── Property Card ────────────────────────────────────────────────────────────
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    return imagePath;
+  }
+
+  if (imagePath.startsWith("/images/")) {
+    const baseUrl = API_URL.replace(/\/$/, "");
+    return `${baseUrl}${imagePath}`;
+  }
+
+  return imagePath;
+};
+
+// ─── Property Card (wide, short — landscape layout) ──────────────────────────
 function PropertyCard({ project }) {
   const [liked, setLiked] = useState(false);
   const navigate = useNavigate();
 
   return (
-    <div className="flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px] hover:-translate-y-1.5 transition-transform duration-300 ease-out">
+    <div className="shrink-0 w-[240px]  md:w-[320px] lg:w-[420px] hover:-translate-y-1.5 transition-transform duration-300 ease-out">
       <BorderGlow
         edgeSensitivity={25}
-        backgroundColor="#ffffff"
+        backgroundColor="#0d1a12"
         borderRadius={16}
         coneSpread={30}
         animated={false}
-        colors={["#10b981", "#34d399", "#059669"]}
-        className="w-full shadow-sm overflow-hidden"
+        colors={["#a3e635", "#65a30d", "#4d7c0f"]}
+        className="w-full shadow-sm overflow-hidden group"
       >
         <div
           onClick={() => {
             navigate(project.route);
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
-          className="cursor-pointer group flex flex-col h-full bg-transparent text-left"
+          className="cursor-pointer flex flex-col h-full bg-transparent text-left"
         >
-          {/* Top Status Bar Container (Now positioned safely above the image layout) */}
-          <div className="px-4 pt-4 pb-2">
-            <span className="inline-block text-[10px] tracking-wider uppercase font-bold text-gray-500 border border-gray-200 bg-gray-50/80 px-2.5 py-1 rounded-md">
-              📌 {project.status || "New Launch"}
-            </span>
-          </div>
-
-          {/* Media Window Container */}
-          <div className="relative mx-3 overflow-hidden rounded-xl bg-gray-200 aspect-[16/10]">
+          {/* Media Window */}
+          <div className="relative overflow-hidden aspect-[13/9]  lg:aspect-[23/9] bg-[#0b1710]">
             <img
-              src={project.image}
+              src={getImageUrl(project.image)}
               alt={project.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+              className="w-full h-full object-cover  transition-transform duration-700 ease-out"
               onError={(e) => {
-                e.target.src = `https://placehold.co/320x200/e2e8f0/94a3b8?text=${encodeURIComponent(project.title)}`;
+                e.target.src = `https://placehold.co/400x225/0b1710/a3e635?text=${encodeURIComponent(project.title)}`;
               }}
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/5 to-transparent pointer-events-none" />
 
-            {/* Overlay Actions */}
-            <div className="absolute top-3 right-3 flex gap-2">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setLiked(!liked);
-                }}
-                className="w-8 h-8 rounded-full bg-white flex items-center justify-center border border-gray-100 shadow-sm hover:bg-gray-50 transition-colors"
-              >
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill={liked ? "#ef4444" : "none"}
-                  stroke={liked ? "#ef4444" : "#374151"}
-                  strokeWidth="2"
-                >
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                </svg>
-              </button>
-            </div>
+            {/* Status badge */}
+            <span className="absolute top-3 left-3 inline-flex items-center gap-1 text-[10px] tracking-wider uppercase font-bold text-lime-300 border border-lime-400/30 bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-full">
+              {project.status || "New Launch"}
+            </span>
+
+            {/* Like button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setLiked(!liked);
+              }}
+              className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:border-lime-400/40 transition-colors"
+            >
+              <Heart
+                size={14}
+                fill={liked ? "#a3e635" : "none"}
+                stroke={liked ? "#a3e635" : "#e5e7eb"}
+                strokeWidth={2}
+              />
+            </button>
           </div>
 
-          {/* Info Layout */}
-          <div className="p-4 flex flex-col flex-grow space-y-2">
-            <h3 className="font-bold text-gray-900 text-base leading-snug line-clamp-1 group-hover:text-emerald-600 transition-colors">
+          {/* Compact Info */}
+          <div className="p-3.5 flex flex-col gap-1.5">
+            <h3 className="font-bold text-white text-[15px] leading-snug line-clamp-1 group-hover:text-lime-400 transition-colors">
               {project.title}
             </h3>
 
-            <div className="flex items-center text-xs text-gray-400">
-              <span className="text-red-500 mr-1">📍</span> {project.location}
-            </div>
-
-            <div className="text-sm font-bold text-emerald-600">
-              {project.price}
-            </div>
-
-            <div className="flex items-center gap-4 pt-1 text-xs text-gray-400">
-              <span>{project.config}</span>
-              <span>{project.area}</span>
-            </div>
-
-            <div className="pt-2 text-[11px] text-gray-400 border-t border-gray-50">
-              <span>
-                By{" "}
-                <span className="text-gray-500 font-medium">
-                  {project.builder}
-                </span>
+            <div className="flex items-center justify-between gap-2 text-[12px]">
+              <span className="flex items-center gap-1 text-gray-400 min-w-0">
+                <MapPin size={11} className="text-lime-400 shrink-0" />
+                <span className="truncate">{project.location}, Yelagiri</span>
+              </span>
+              <span className="font-bold text-lime-400 shrink-0">
+                {project.price}
               </span>
             </div>
+
+            {/* <div className="flex items-center gap-3 text-[11px] text-gray-500 pt-0.5">
+              <span className="flex items-center gap-1">
+                <CalendarDays size={11} className="text-lime-400/70" />
+                {project.config}
+              </span>
+              <span className="flex items-center gap-1">
+                <LayoutGrid size={11} className="text-lime-400/70" />
+                {project.area}
+              </span>
+            </div> */}
+
+            {/* <div className="pt-1.5 mt-0.5 border-t border-white/5 text-[10px] text-gray-500">
+              By{" "}
+              <span className="text-gray-300 font-medium">
+                {project.builder}
+              </span>
+            </div> */}
           </div>
         </div>
       </BorderGlow>
@@ -151,24 +134,15 @@ function ArrowButton({ direction, onClick, disabled }) {
       className={`w-9 h-9 rounded-full border flex items-center justify-center transition-all duration-200
         ${
           disabled
-            ? "border-gray-100 text-gray-200 cursor-not-allowed bg-white"
-            : "border-gray-200 text-gray-600 hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 bg-white shadow-sm"
+            ? "border-white/5 text-gray-700 cursor-not-allowed bg-[#0d1a12]"
+            : "border-lime-400/25 text-gray-300 hover:border-lime-400 hover:text-lime-400 bg-[#0d1a12] shadow-sm"
         }`}
     >
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-      >
-        {direction === "left" ? (
-          <path d="m15 18-6-6 6-6" />
-        ) : (
-          <path d="m9 18 6-6-6-6" />
-        )}
-      </svg>
+      {direction === "left" ? (
+        <ChevronLeft size={16} strokeWidth={2.5} />
+      ) : (
+        <ChevronRight size={16} strokeWidth={2.5} />
+      )}
     </button>
   );
 }
@@ -182,6 +156,7 @@ export default function FastMovingProjects() {
 
   useEffect(() => {
     const fetchProjectsList = async () => {
+      console.log("API_URL", API_URL);
       try {
         const res = await fetch(`${API_URL}/api/projects`);
         if (res.ok) {
@@ -200,13 +175,13 @@ export default function FastMovingProjects() {
               builder: p.author || "Admin",
               route: p.routeSubpath,
             }));
-          setProjects(filtered.length > 0 ? filtered : DEFAULT_PROJECTS);
+          setProjects(filtered);
         } else {
-          setProjects(DEFAULT_PROJECTS);
+          setProjects([]);
         }
       } catch (error) {
         console.error("Error fetching fast moving projects:", error);
-        setProjects(DEFAULT_PROJECTS);
+        setProjects([]);
       }
     };
     fetchProjectsList();
@@ -251,9 +226,9 @@ export default function FastMovingProjects() {
         hidden: {},
         visible: { transition: { staggerChildren: 0.25 } },
       }}
-      className="w-full bg-[#f2faf5] py-10 md:py-14"
+      className="w-full pt-7 bg-slate-950"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 lg:px-16 flex flex-col gap-4">
+      <div className="px-4 sm:px-6 md:px-10 lg:px-9 flex flex-col gap-4">
         {/* Header Row */}
         <motion.div
           variants={{
@@ -263,26 +238,29 @@ export default function FastMovingProjects() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="flex items-center justify-between"
         >
-          <h2 className="text-[22px] sm:text-[26px] md:text-[30px] font-bold text-gray-900 leading-tight">
-            Premium 1-Acre Estates
-          </h2>
+          <div className="flex items-start gap-4">
+            <div className="p-2 rounded-xl bg-lime-400/10 border border-lime-400/20">
+              <Mountain className="w-5 h-5 md:w-6 md:h-6 text-lime-400 shrink-0" />
+            </div>
+            <h2 className="uppercase leading-none">
+              <span className="block text-[18px] sm:text-[20px] md:text-[22px] font-extrabold tracking-wider text-lime-400">
+                PREMIUM LANDS
+              </span>
+
+              <span className="block mt-1 text-[18px]  md:text-[17px] font-black tracking-tight text-white">
+                25 CENTS to 1 ACRES
+              </span>
+            </h2>
+            {/* <span className="hidden sm:block w-14 md:w-16 h-px bg-white/20" /> */}
+          </div>
 
           {/* <div className="flex items-center gap-3">
             <a
               href="#"
-              className="hidden sm:flex items-center gap-1 text-emerald-700 text-sm font-medium hover:underline"
+              className="hidden sm:flex items-center gap-1 text-lime-400 text-sm font-medium hover:text-lime-300 hover:underline"
             >
               View all
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-              >
-                <path d="m9 18 6-6-6-6" />
-              </svg>
+              <ChevronRight size={16} strokeWidth={2.5} />
             </a>
 
             <div className="flex gap-2">
@@ -300,21 +278,67 @@ export default function FastMovingProjects() {
           </div> */}
         </motion.div>
 
-        {/* Carousel Track */}
+        {/* Carousel Track — free horizontal scroll, arrows nudge it */}
         <motion.div
           variants={{
             hidden: { opacity: 0, y: 40 },
             visible: { opacity: 1, y: 0 },
           }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          ref={scrollRef}
-          className="flex gap-4 overflow-x-auto scroll-smooth pt-4 pb-4 px-2 -mx-2 hide-scrollbar"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          className="relative w-full"
         >
-          <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; }`}</style>
-          {projects.map((project) => (
-            <PropertyCard key={project.id} project={project} />
-          ))}
+          {/* Fade Overlays — same pattern as UpcomingEvents */}
+          <div
+            className={`absolute -left-4 top-0 bottom-0 w-8 bg-gradient-to-r from-slate-950 to-transparent pointer-events-none z-10 transition-opacity duration-300 ${
+              canScrollLeft ? "opacity-100" : "opacity-0"
+            }`}
+          />
+          <div
+            className={`absolute -right-4 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-950 via-slate-950/70 to-transparent pointer-events-none z-20 transition-opacity duration-300 ${
+              canScrollRight ? "opacity-100" : "opacity-0"
+            }`}
+          />
+
+          <div
+            ref={scrollRef}
+            className="flex gap-4 overflow-x-auto scroll-smooth pt-4 pb-4 px-2 -mx-2 hide-scrollbar"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; }`}</style>
+            {projects.length > 0 ? (
+              <div
+                ref={scrollRef}
+                className="flex gap-4 overflow-x-auto scroll-smooth pt-4 pb-4 px-2 -mx-2 hide-scrollbar"
+                style={{
+                  scrollbarWidth: "none",
+                  msOverflowStyle: "none",
+                }}
+              >
+                <style>{`
+      .hide-scrollbar::-webkit-scrollbar{
+        display:none;
+      }
+    `}</style>
+
+                {projects.map((project) => (
+                  <PropertyCard key={project.id} project={project} />
+                ))}
+              </div>
+            ) : (
+              <div className="w-full min-h-[320px] rounded-3xl border border-dashed border-lime-400/20 bg-[#0d1a12] flex flex-col items-center justify-center text-center px-6">
+                <Mountain className="w-14 h-14 text-lime-400/40 mb-5" />
+
+                <h3 className="text-2xl font-bold text-white">
+                  No Premium Plot Projects
+                </h3>
+
+                <p className="mt-3 max-w-md text-gray-400 leading-relaxed">
+                  There are currently no projects available in this category.
+                  Please check back later for upcoming launches.
+                </p>
+              </div>
+            )}
+          </div>
         </motion.div>
 
         {/* View All — mobile only */}
@@ -328,19 +352,10 @@ export default function FastMovingProjects() {
         >
           <a
             href="#"
-            className="flex items-center gap-1 text-emerald-700 text-sm font-medium border border-gray-200 rounded-full px-5 py-2 hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-1 text-lime-400 text-sm font-medium border border-lime-400/25 rounded-full px-5 py-2 hover:bg-lime-400/5 transition-colors"
           >
             View all project
-            <svg
-              width="15"
-              height="15"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-            >
-              <path d="m9 18 6-6-6-6" />
-            </svg>
+            <ChevronRight size={15} strokeWidth={2.5} />
           </a>
         </motion.div> */}
       </div>
