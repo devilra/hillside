@@ -134,14 +134,14 @@ function PropertyCard({ project }) {
             <div className="flex items-center justify-between gap-2 text-[12px]">
               <span className="flex items-center gap-1 text-gray-400 min-w-0">
                 <MapPin size={11} className="text-lime-400 shrink-0" />
-                <span className="truncate">{project.location}</span>
+                <span className="truncate">{project.location}, Yelagiri</span>
               </span>
               <span className="font-bold text-lime-400 shrink-0">
                 {project.price}
               </span>
             </div>
 
-            {(project.config || project.area) && (
+            {/* {(project.config || project.area) && (
               <div className="flex items-center gap-3 text-[11px] text-gray-500 pt-0.5">
                 {project.config && (
                   <span className="flex items-center gap-1">
@@ -156,14 +156,14 @@ function PropertyCard({ project }) {
                   </span>
                 )}
               </div>
-            )}
+            )} */}
 
-            <div className="pt-1.5 mt-0.5 border-t border-white/5 text-[10px] text-gray-500">
+            {/* <div className="pt-1.5 mt-0.5 border-t border-white/5 text-[10px] text-gray-500">
               By{" "}
               <span className="text-gray-300 font-medium">
                 {project.builder}
               </span>
-            </div>
+            </div> */}
           </div>
         </div>
       </BorderGlow>

@@ -225,10 +225,71 @@ export const getProjects = async (req, res) => {
     const projects = await Project.findAll({
       order: [["id", "DESC"]],
     });
-    return res.json(projects);
+
+    const response = projects.map((project) => {
+      const p = project.toJSON();
+
+      return {
+        id: p.id,
+
+        // Basic
+        type: p.type,
+        title: p.title,
+        author: p.author,
+        location: p.location,
+        routeSubpath: p.routeSubpath,
+        priceToken: p.priceToken,
+        status: p.status,
+
+        // Overview
+        possessionDate: p.possessionDate,
+        totalApts: p.totalApts,
+        launchTimeline: p.launchTimeline,
+        reraId: p.reraId,
+
+        // Land Details
+        ownerName: p.ownerName,
+        area: p.area,
+        waterSource: p.waterSource,
+        fencingType: p.fencingType,
+        landSketch: p.landSketch,
+        fmv: p.fmv,
+
+        // Road
+        nearestRoad: p.nearestRoad,
+        distanceToMainRoad: p.distanceToMainRoad,
+        connectionRoadWidth: p.connectionRoadWidth,
+        roadType: p.roadType,
+
+        // Connectivity
+        ebConnectivity: p.ebConnectivity,
+        legalVerification: p.legalVerification,
+
+        // Other
+        amenities: parseJsonArray(p.amenities),
+        description: p.description,
+
+        // Images
+        mainImage: p.mainImage,
+        galleryImages: parseJsonArray(p.galleryImages),
+
+        // Videos
+        videos: parseJsonArray(p.videos),
+        youtubeEmbeds: parseJsonArray(p.youtubeEmbeds),
+
+        // 360
+        view360: p.view360,
+      };
+    });
+
+    return res.json(response);
   } catch (error) {
-    console.error("Error fetching projects:", error);
-    return res.status(500).json({ message: "Failed to fetch projects." });
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch projects.",
+    });
   }
 };
 

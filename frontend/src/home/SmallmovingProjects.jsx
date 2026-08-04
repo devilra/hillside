@@ -69,9 +69,155 @@ const DEFAULT_PROJECTS = [
 ];
 
 // ─── Property Card (wide, short — landscape layout) ──────────────────────────
+function getCalculatedDetails(project) {
+  // 1. Rate per Cent
+  let ratePerCent = 0;
+  let rateStr = "";
+
+  const fieldsToCheckRate = [
+    project.price,
+    project.status,
+    project.fmv,
+    project.priceToken,
+  ];
+  for (const f of fieldsToCheckRate) {
+    if (f && typeof f === "string" && f.toLowerCase().includes("per cent")) {
+      rateStr = f;
+      const match = f.match(/([0-9.]+)/);
+      if (match) {
+        ratePerCent = parseFloat(match[1]);
+        break;
+      }
+    }
+  }
+
+  // 2. Area
+  let areaValue = 0;
+  let areaUnit = "cent";
+  let areaStr = "";
+
+  if (
+    project.area &&
+    typeof project.area === "string" &&
+    project.area.trim() !== "" &&
+    project.area.toLowerCase() !== "test" &&
+    project.area.toLowerCase() !== "nil"
+  ) {
+    areaStr = project.area;
+  } else if (
+    project.price &&
+    typeof project.price === "string" &&
+    (project.price.toLowerCase().includes("cent") ||
+      project.price.toLowerCase().includes("acre")) &&
+    !project.price.toLowerCase().includes("per cent")
+  ) {
+    areaStr = project.price;
+  } else if (
+    project.totalApts &&
+    typeof project.totalApts === "string" &&
+    project.totalApts.trim() !== ""
+  ) {
+    areaStr = project.totalApts;
+  } else if (
+    project.config &&
+    typeof project.config === "string" &&
+    project.config.trim() !== ""
+  ) {
+    areaStr = project.config;
+  }
+
+  if (areaStr) {
+    const numMatch = areaStr.match(/([0-9.]+)/);
+    if (numMatch) {
+      areaValue = parseFloat(numMatch[1]);
+      if (areaStr.toLowerCase().includes("acre")) {
+        areaUnit = "acre";
+      } else {
+        areaUnit = "cent";
+      }
+    }
+  }
+
+  // Convert area to cents
+  let cents = 0;
+  if (areaUnit === "acre") {
+    cents = areaValue * 100;
+  } else {
+    cents = areaValue;
+  }
+
+  // Calculate Total Price
+  const totalPriceLakhs = cents * ratePerCent;
+
+  let formattedTotalPrice = "Price on Request";
+  if (totalPriceLakhs > 0) {
+    if (totalPriceLakhs >= 100) {
+      formattedTotalPrice = `₹ ${(totalPriceLakhs / 100).toFixed(2)} Cr`;
+    } else {
+      formattedTotalPrice = `₹ ${totalPriceLakhs.toFixed(2)} Lakhs`;
+    }
+  } else if (
+    project.price &&
+    typeof project.price === "string" &&
+    !project.price.toLowerCase().includes("cent")
+  ) {
+    formattedTotalPrice = project.price;
+  }
+
+  // Calculate Infrastructure progress
+  let amenitiesArray = [];
+  try {
+    amenitiesArray =
+      typeof project.amenities === "string"
+        ? JSON.parse(project.amenities || "[]")
+        : project.amenities || [];
+  } catch (e) {
+    amenitiesArray = [];
+  }
+
+  const checkAmenities = ["EB Connectivity", "Water Source", "Fencing"];
+  let presentCount = 0;
+  checkAmenities.forEach((am) => {
+    const hasAmenity =
+      amenitiesArray.some((val) =>
+        val.toLowerCase().includes(am.toLowerCase()),
+      ) ||
+      (project.ebConnectivity &&
+        project.ebConnectivity.toLowerCase() === "available" &&
+        am === "EB Connectivity") ||
+      (project.waterSource &&
+        project.waterSource.toLowerCase() === "available" &&
+        am === "Water Source") ||
+      (project.fencingType &&
+        project.fencingType.toLowerCase() === "available" &&
+        am === "Fencing");
+    if (hasAmenity) {
+      presentCount++;
+    }
+  });
+
+  const infrastructurePercent = Math.round(
+    (presentCount / checkAmenities.length) * 100,
+  );
+
+  return {
+    ratePerCent: rateStr || (ratePerCent ? `${ratePerCent}L per cent` : "N/A"),
+    totalArea:
+      areaStr ||
+      (areaValue
+        ? `${areaValue} ${areaUnit === "acre" ? "Acres" : "Cents"}`
+        : "N/A"),
+    totalPrice: formattedTotalPrice,
+    percent: infrastructurePercent,
+  };
+}
+
+// ─── Property Card (wide, short — landscape layout) ──────────────────────────
 function PropertyCard({ project }) {
+  console.log("Projects", project);
   const [liked, setLiked] = useState(false);
   const navigate = useNavigate();
+  const details = getCalculatedDetails(project);
 
   return (
     <div className="shrink-0 w-[240px]  md:w-[320px] lg:w-[420px] hover:-translate-y-1.5 transition-transform duration-300 ease-out">
@@ -105,24 +251,11 @@ function PropertyCard({ project }) {
 
             {/* Status badge */}
             <span className="absolute top-3 left-3 inline-flex items-center gap-1 text-[10px] tracking-wider uppercase font-bold text-lime-300 border border-lime-400/30 bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-full">
-              {project.status || "New Launch"}
+              {project.status &&
+              !project.status.toLowerCase().includes("per cent")
+                ? project.status
+                : "Ready to Buy"}
             </span>
-
-            {/* Like button */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setLiked(!liked);
-              }}
-              className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:border-lime-400/40 transition-colors"
-            >
-              <Heart
-                size={14}
-                fill={liked ? "#a3e635" : "none"}
-                stroke={liked ? "#a3e635" : "#e5e7eb"}
-                strokeWidth={2}
-              />
-            </button>
           </div>
 
           {/* Compact Info */}
@@ -134,29 +267,49 @@ function PropertyCard({ project }) {
             <div className="flex items-center justify-between gap-2 text-[12px]">
               <span className="flex items-center gap-1 text-gray-400 min-w-0">
                 <MapPin size={11} className="text-lime-400 shrink-0" />
-                <span className="truncate">{project.location}</span>
+                <span className="truncate">{project.location}, Yelagiri</span>
               </span>
               <span className="font-bold text-lime-400 shrink-0">
-                {project.price}
+                {details.ratePerCent !== "N/A"
+                  ? details.ratePerCent
+                  : project.price}
               </span>
             </div>
 
-            <div className="flex items-center gap-3 text-[11px] text-gray-500 pt-0.5">
-              <span className="flex items-center gap-1">
-                <CalendarDays size={11} className="text-lime-400/70" />
-                {project.config}
-              </span>
-              <span className="flex items-center gap-1">
-                <LayoutGrid size={11} className="text-lime-400/70" />
-                {project.area}
-              </span>
-            </div>
-
-            <div className="pt-1.5 mt-0.5 border-t border-white/5 text-[10px] text-gray-500">
-              By{" "}
-              <span className="text-gray-300 font-medium">
-                {project.builder}
-              </span>
+            {/* Additional Details for Small Plots */}
+            <div className="flex flex-col gap-1.5 mt-2 pt-2 border-t border-white/5 text-[11px]">
+              <div className="flex justify-between items-center text-slate-450">
+                <span className="text-gray-400">Total Area:</span>
+                <span className="text-white font-medium">
+                  {details.totalArea}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-slate-450">
+                <span className="text-gray-400">Rate per Cent:</span>
+                <span className="text-[#a3e635] font-semibold">
+                  {details.ratePerCent}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-slate-450">
+                <span className="text-gray-400">Total Value:</span>
+                <span className="text-[#a3e635] font-extrabold">
+                  {details.totalPrice}
+                </span>
+              </div>
+              {/* <div className="flex items-center justify-between text-slate-455 mt-0.5">
+                <span className="text-gray-400">Development:</span>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-16 h-1 bg-white/10 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-[#a3e635] rounded-full transition-all duration-500"
+                      style={{ width: `${details.percent}%` }}
+                    />
+                  </div>
+                  <span className="text-white font-bold text-[10px]">
+                    {details.percent}%
+                  </span>
+                </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -213,9 +366,21 @@ export default function SmallMovingProjects() {
               price: p.priceToken || "Price on request",
               status: p.status,
               config: p.launchTimeline,
-              area: p.totalApts,
+              area: p.area || p.totalApts,
               builder: p.author || "Admin",
               route: p.routeSubpath,
+              ownerName: p.ownerName,
+              waterSource: p.waterSource,
+              fencingType: p.fencingType,
+              landSketch: p.landSketch,
+              fmv: p.fmv,
+              nearestRoad: p.nearestRoad,
+              distanceToMainRoad: p.distanceToMainRoad,
+              connectionRoadWidth: p.connectionRoadWidth,
+              roadType: p.roadType,
+              ebConnectivity: p.ebConnectivity,
+              legalVerification: p.legalVerification,
+              amenities: p.amenities,
             }));
           setProjects(filtered);
         } else {

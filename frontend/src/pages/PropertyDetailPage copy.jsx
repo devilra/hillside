@@ -495,6 +495,159 @@ function Lightbox({ images, startIndex, onClose }) {
   );
 }
 
+function getCalculatedDetails(project) {
+  if (!project) {
+    return {
+      ratePerCent: "N/A",
+      totalArea: "N/A",
+      totalPrice: "Price on Request",
+      percent: 0,
+    };
+  }
+
+  // 1. Rate per Cent
+  let ratePerCent = 0;
+  let rateStr = "";
+
+  const fieldsToCheckRate = [project.priceToken, project.status, project.fmv];
+  for (const f of fieldsToCheckRate) {
+    if (f && typeof f === "string" && f.toLowerCase().includes("per cent")) {
+      rateStr = f;
+      const match = f.match(/([0-9.]+)/);
+      if (match) {
+        ratePerCent = parseFloat(match[1]);
+        break;
+      }
+    }
+  }
+
+  // 2. Area
+  let areaValue = 0;
+  let areaUnit = "cent";
+  let areaStr = "";
+
+  if (
+    project.area &&
+    typeof project.area === "string" &&
+    project.area.trim() !== "" &&
+    project.area.toLowerCase() !== "test" &&
+    project.area.toLowerCase() !== "nil"
+  ) {
+    areaStr = project.area;
+  } else if (
+    project.priceToken &&
+    typeof project.priceToken === "string" &&
+    (project.priceToken.toLowerCase().includes("cent") ||
+      project.priceToken.toLowerCase().includes("acre")) &&
+    !project.priceToken.toLowerCase().includes("per cent")
+  ) {
+    areaStr = project.priceToken;
+  } else if (
+    project.totalApts &&
+    typeof project.totalApts === "string" &&
+    project.totalApts.trim() !== ""
+  ) {
+    areaStr = project.totalApts;
+  } else if (
+    project.launchTimeline &&
+    typeof project.launchTimeline === "string" &&
+    project.launchTimeline.trim() !== ""
+  ) {
+    areaStr = project.launchTimeline;
+  }
+
+  if (areaStr) {
+    const numMatch = areaStr.match(/([0-9.]+)/);
+    if (numMatch) {
+      areaValue = parseFloat(numMatch[1]);
+      if (areaStr.toLowerCase().includes("acre")) {
+        areaUnit = "acre";
+      } else {
+        areaUnit = "cent";
+      }
+    }
+  }
+
+  // Convert area to cents
+  let cents = 0;
+  if (areaUnit === "acre") {
+    cents = areaValue * 100;
+  } else {
+    cents = areaValue;
+  }
+
+  // Calculate Total Price
+  const totalPriceLakhs = cents * ratePerCent;
+
+  let formattedTotalPrice = "Price on Request";
+  if (totalPriceLakhs > 0) {
+    if (totalPriceLakhs >= 100) {
+      formattedTotalPrice = `₹ ${(totalPriceLakhs / 100).toFixed(2)} Cr`;
+    } else {
+      formattedTotalPrice = `₹ ${totalPriceLakhs.toFixed(2)} Lakhs`;
+    }
+  } else if (
+    project.priceToken &&
+    typeof project.priceToken === "string" &&
+    !project.priceToken.toLowerCase().includes("cent")
+  ) {
+    formattedTotalPrice = project.priceToken;
+  } else if (
+    project.fmv &&
+    typeof project.fmv === "string" &&
+    !project.fmv.toLowerCase().includes("cent")
+  ) {
+    formattedTotalPrice = project.fmv;
+  }
+
+  // Calculate Infrastructure progress
+  let amenitiesArray = [];
+  try {
+    amenitiesArray =
+      typeof project.amenities === "string"
+        ? JSON.parse(project.amenities || "[]")
+        : project.amenities || [];
+  } catch (e) {
+    amenitiesArray = [];
+  }
+
+  const checkAmenities = ["EB Connectivity", "Water Source", "Fencing"];
+  let presentCount = 0;
+  checkAmenities.forEach((am) => {
+    const hasAmenity =
+      amenitiesArray.some((val) =>
+        val.toLowerCase().includes(am.toLowerCase()),
+      ) ||
+      (project.ebConnectivity &&
+        project.ebConnectivity.toLowerCase() === "available" &&
+        am === "EB Connectivity") ||
+      (project.waterSource &&
+        project.waterSource.toLowerCase() === "available" &&
+        am === "Water Source") ||
+      (project.fencingType &&
+        project.fencingType.toLowerCase() === "available" &&
+        am === "Fencing");
+    if (hasAmenity) {
+      presentCount++;
+    }
+  });
+
+  const infrastructurePercent = Math.round(
+    (presentCount / checkAmenities.length) * 100,
+  );
+
+  return {
+    ratePerCent: rateStr || (ratePerCent ? `${ratePerCent}L per cent` : "N/A"),
+    totalArea:
+      areaStr ||
+      (areaValue
+        ? `${areaValue} ${areaUnit === "acre" ? "Acres" : "Cents"}`
+        : "N/A"),
+    totalPrice: formattedTotalPrice,
+    percent: infrastructurePercent,
+  };
+}
+
 // ── Main Component ─────────────────────────────────────────────────────────────
 export default function PropertyDetailPage() {
   const { slug } = useParams();
@@ -504,6 +657,7 @@ export default function PropertyDetailPage() {
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [lightbox, setLightbox] = useState(null);
   const [activeVideo, setActiveVideo] = useState(null);
+  const details = getCalculatedDetails(project);
 
   // Tab selections
   const [activeTab, setActiveTab] = useState("overview");
@@ -960,7 +1114,9 @@ export default function PropertyDetailPage() {
                   project.launchTimeline) ||
                   ((project.type === "small_plot" ||
                     project.type === "large_plot") &&
-                    (project.area || project.totalApts))) && (
+                    (project.area ||
+                      project.totalApts ||
+                      details.totalArea !== "N/A"))) && (
                   <div>
                     <p className="text-xs text-slate-500 flex items-center gap-1">
                       <span>⊞</span>{" "}
@@ -973,7 +1129,9 @@ export default function PropertyDetailPage() {
                       {project.type !== "small_plot" &&
                       project.type !== "large_plot"
                         ? project.launchTimeline
-                        : project.area || project.totalApts}
+                        : details.totalArea !== "N/A"
+                          ? details.totalArea
+                          : project.area || project.totalApts}
                     </p>
                   </div>
                 )}
@@ -993,11 +1151,14 @@ export default function PropertyDetailPage() {
                       <span>▤</span> Status
                     </p>
                     <p className="text-sm font-semibold text-white mt-1">
-                      {project.status}
+                      {project.status &&
+                      project.status.toLowerCase().includes("per cent")
+                        ? "Ready to Buy"
+                        : project.status}
                     </p>
                   </div>
                 )}
-                {project.fmv ? (
+                {/* {project.fmv ? (
                   <div>
                     <p className="text-xs text-slate-500 flex items-center gap-1">
                       <span>▤</span> Market Value (FMV)
@@ -1015,14 +1176,19 @@ export default function PropertyDetailPage() {
                       ₹ 8,822 sq.ft
                     </p>
                   </div>
-                ) : null}
+                ) : null} */}
               </div>
             </div>
 
             <div className="w-full lg:w-auto text-left lg:text-right shrink-0">
               <p className="text-xl font-bold text-lime-400">
-                {project.priceToken || project.fmv || "Price on Request"}
+                {details.totalPrice}
               </p>
+              {details.ratePerCent !== "N/A" && (
+                <p className="text-xs text-slate-450 mt-1">
+                  ({details.ratePerCent})
+                </p>
+              )}
               {/* {(project.priceToken || project.fmv) && (
                 <div className="flex items-center justify-end gap-2 mt-1">
                   <span className="text-xs text-slate-400">Builder Price</span>
@@ -1106,7 +1272,7 @@ export default function PropertyDetailPage() {
                         Total Area / Plots
                       </p>
                       <p className="text-sm font-semibold text-white mt-1">
-                        {project.area || project.totalApts || "Area on request"}
+                        {details.totalArea !== "N/A" ? details.totalArea : (project.area || project.totalApts || "Area on request")}
                       </p>
                     </div>
                     <div>
@@ -1206,17 +1372,17 @@ export default function PropertyDetailPage() {
                           </span>
                         </div>
                       )}
-                      {(project.area || project.totalApts) && (
+                      {(project.area || project.totalApts || details.totalArea !== "N/A") && (
                         <div className="flex justify-between items-center border-b border-white/5 pb-2">
                           <span className="text-slate-400 text-sm">
                             Total Area
                           </span>
                           <span className="text-white text-sm font-semibold">
-                            {project.area || project.totalApts}
+                            {details.totalArea !== "N/A" ? details.totalArea : (project.area || project.totalApts)}
                           </span>
                         </div>
                       )}
-                      {project.waterSource && (
+                      {/* {project.waterSource && (
                         <div className="flex justify-between items-center border-b border-white/5 pb-2">
                           <span className="text-slate-400 text-sm">
                             Water Source
@@ -1225,8 +1391,8 @@ export default function PropertyDetailPage() {
                             {project.waterSource}
                           </span>
                         </div>
-                      )}
-                      {project.fencingType && (
+                      )} */}
+                      {/* {project.fencingType && (
                         <div className="flex justify-between items-center border-b border-white/5 pb-2">
                           <span className="text-slate-400 text-sm">
                             Fencing Type
@@ -1235,7 +1401,7 @@ export default function PropertyDetailPage() {
                             {project.fencingType}
                           </span>
                         </div>
-                      )}
+                      )} */}
                       {project.landSketch && (
                         <div className="flex justify-between items-center border-b border-white/5 pb-2">
                           <span className="text-slate-400 text-sm">
@@ -1296,7 +1462,7 @@ export default function PropertyDetailPage() {
                           </span>
                         </div>
                       )}
-                      {project.ebConnectivity && (
+                      {/* {project.ebConnectivity && (
                         <div className="flex justify-between items-center border-b border-white/5 pb-2">
                           <span className="text-slate-400 text-sm">
                             EB Connectivity
@@ -1305,7 +1471,7 @@ export default function PropertyDetailPage() {
                             {project.ebConnectivity}
                           </span>
                         </div>
-                      )}
+                      )} */}
                       {project.legalVerification && (
                         <div className="flex justify-between items-center border-b border-white/5 pb-2">
                           <span className="text-slate-400 text-sm">
@@ -1487,7 +1653,7 @@ export default function PropertyDetailPage() {
                     {project.title} Gallery
                   </h2>
 
-                  <div className="flex gap-0 border-b border-white/10 mb-5 overflow-x-auto">
+                  {/* <div className="flex gap-0 border-b border-white/10 mb-5 overflow-x-auto">
                     {[
                       "Elevation",
                       "Amenities",
@@ -1510,7 +1676,7 @@ export default function PropertyDetailPage() {
                         )}
                       </button>
                     ))}
-                  </div>
+                  </div> */}
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {carouselMedia.map((media, i) => (
