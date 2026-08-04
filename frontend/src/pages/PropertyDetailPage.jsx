@@ -1028,7 +1028,7 @@ export default function PropertyDetailPage() {
                 )}
               </div>
 
-              <div className="flex flex-wrap items-center gap-3">
+              {/* <div className="flex flex-wrap items-center gap-3">
                 <h1 className="text-2xl font-bold text-white">
                   {project.title}
                 </h1>
@@ -1038,7 +1038,7 @@ export default function PropertyDetailPage() {
                 <button className="text-slate-400 hover:text-lime-400 transition-colors">
                   <Share2 size={20} />
                 </button>
-              </div>
+              </div> */}
 
               {project.author && (
                 <p className="text-sm text-slate-400 mt-0.5">
