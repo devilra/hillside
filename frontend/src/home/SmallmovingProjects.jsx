@@ -260,11 +260,8 @@ function PropertyCard({ project }) {
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/5 to-transparent pointer-events-none" />
 
             {/* Status badge */}
-            <span className="absolute top-3 left-3 inline-flex items-center gap-1 text-[10px] tracking-wider uppercase font-bold text-lime-300 border border-lime-400/30 bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-full">
-              {project.status &&
-              !project.status.toLowerCase().includes("per cent")
-                ? project.status
-                : "Ready to Buy"}
+            <span className="absolute top-3 left-3 inline-flex items-center gap-1 text-[10px] font-bold text-white border border-lime-400/30 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full">
+              {details.totalArea}
             </span>
           </div>
 
@@ -291,7 +288,7 @@ function PropertyCard({ project }) {
               <div className="flex justify-between items-center text-slate-450">
                 <span className="text-gray-400">Total Area:</span>
 
-                <span className="text-white">{details.totalSqft}</span>
+                <span className="text-white">{details.totalArea}</span>
               </div>
               <div className="flex justify-between items-center text-slate-450">
                 <span className="text-gray-400">Total Value:</span>

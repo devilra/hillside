@@ -573,7 +573,7 @@ function getCalculatedDetails(project) {
     ratePerSqft:
       ratePerSqft > 0 ? `₹ ${ratePerSqft.toLocaleString()} / Sq.ft` : "N/A",
 
-    totalArea: totalSqft > 0 ? `${totalSqft.toLocaleString()} Sq.ft` : "N/A",
+    totalArea: totalCent > 0 ? `${totalCent.toLocaleString()} Cent` : "N/A",
 
     totalSqft,
 
@@ -1352,7 +1352,7 @@ export default function PropertyDetailPage() {
                         {project.launchTimeline || "N/A"}
                       </p>
                     </div>
-                    <div>
+                    {/* <div>
                       <p className="text-xs text-slate-500 uppercase tracking-wide">
                         Availability
                       </p>
@@ -1361,7 +1361,7 @@ export default function PropertyDetailPage() {
                           ? `Direct from ${project.author}`
                           : "Direct from Developer"}
                       </p>
-                    </div>
+                    </div> */}
                   </div>
 
                   {project.reraId && (
